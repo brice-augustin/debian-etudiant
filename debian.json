@@ -1,0 +1,61 @@
+{
+  "variables": {
+      "debian_version": "9.4.0",
+      "physical_nic": "en0"
+  },
+  "builders": [
+    {
+      "type": "virtualbox-iso",
+      "boot_command": [
+        "<esc><wait>",
+        "install <wait>",
+        "preseed/url=http://{{ .HTTPIP }}:{{ .HTTPPort }}/preseed_stretch.cfg <wait>",
+        "debian-installer=fr_FR <wait>",
+        "auto <wait>",
+        "locale=fr_FR <wait>",
+        "kbd-chooser/method=fr <wait>",
+        "keyboard-configuration/xkb-keymap=fr(latin9) <wait>",
+        "netcfg/get_hostname={{ .Name }} <wait>",
+        "netcfg/get_domain=iutcv.fr <wait>",
+        "fb=false <wait>",
+        "debconf/frontend=noninteractive <wait>",
+        "console-setup/ask_detect=false <wait>",
+        "console-keymaps-at/keymap=fr <wait>",
+        "<enter><wait>"
+      ],
+      "boot_wait": "10s",
+      "disk_size": 8192,
+      "guest_os_type": "Debian_64",
+      "headless": false,
+      "http_directory": ".",
+      "iso_checksum_type": "sha512",
+      "keep_registered": "True",
+      "skip_export": "True",
+      "iso_checksum_url": "http://cdimage.debian.org/cdimage/release/{{user `debian_version`}}/amd64/iso-cd/SHA512SUMS",
+      "iso_url": "http://cdimage.debian.org/cdimage/release/{{user `debian_version`}}/amd64/iso-cd/debian-{{user `debian_version`}}-amd64-netinst.iso",
+      "ssh_username": "etudiant",
+      "ssh_password": "vitrygtr",
+      "ssh_port": 22,
+      "ssh_wait_timeout": "10000s",
+      "shutdown_command": "echo vitrygtr | sudo -S /sbin/shutdown -hP now",
+      "guest_additions_path": "VBoxGuestAdditions_{{.Version}}.iso",
+      "virtualbox_version_file": ".vbox_version",
+      "vm_name": "debian-{{user `debian_version`}}-amd64",
+      "vboxmanage": [
+        [ "modifyvm", "{{.Name}}", "--memory", "512" ],
+        [ "modifyvm", "{{.Name}}", "--cpus", "1" ]
+      ],
+      "vboxmanage_post": [
+        [ "controlvm", "{{.Name}}", "nic1", "bridged", "{{user `physical_nic`}}" ]
+      ]
+    }
+  ],
+  "post-processors": [
+  ],
+  "provisioners": [
+    {
+      "type": "shell",
+      "script": "customize.sh"
+     }
+  ]
+}
