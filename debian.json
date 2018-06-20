@@ -11,6 +11,7 @@
         "install <wait>",
         "preseed/url=http://{{ .HTTPIP }}:{{ .HTTPPort }}/preseed.cfg <wait>",
         "debian-installer=fr_FR <wait>",
+        "net.ifnames=0 biosdevname=0 <wait>",
         "auto <wait>",
         "locale=fr_FR <wait>",
         "kbd-chooser/method=fr <wait>",
