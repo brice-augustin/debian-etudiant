@@ -45,9 +45,6 @@
       "vboxmanage": [
         [ "modifyvm", "{{.Name}}", "--memory", "512" ],
         [ "modifyvm", "{{.Name}}", "--cpus", "1" ]
-      ],
-      "vboxmanage_post": [
-        [ "controlvm", "{{.Name}}", "nic1", "bridged", "{{user `physical_nic`}}" ]
       ]
     }
   ],
