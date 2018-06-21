@@ -34,7 +34,7 @@
       "skip_export": "True",
       "iso_checksum_url": "http://cdimage.debian.org/cdimage/release/{{user `debian_version`}}/amd64/iso-cd/SHA512SUMS",
       "iso_url": "http://cdimage.debian.org/cdimage/release/{{user `debian_version`}}/amd64/iso-cd/debian-{{user `debian_version`}}-amd64-netinst.iso",
-      "ssh_username": "etudiant",
+      "ssh_username": "root",
       "ssh_password": "vitrygtr",
       "ssh_port": 22,
       "ssh_wait_timeout": "10000s",
