@@ -52,8 +52,14 @@
   ],
   "provisioners": [
     {
+      "type": "file",
+      "source": "prep",
+      "destination": "/root"
+    },
+    {
       "type": "shell",
-      "script": "postinstall.sh"
+      "script": "postinstall.sh",
+      "environment_vars": [ "DEPLOY_TYPE=vm" ]
      }
   ]
 }
