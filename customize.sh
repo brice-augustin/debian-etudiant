@@ -15,11 +15,11 @@ sudo apt-get install -y dnsutils
 # P+VM
 ####
 # Alternative : ajouter ça dans /etc/profile.d/proxy.sh
-echo "http_proxy=$PROXYIUT" >> /etc/bash.bashrc
-echo "https_proxy=$PROXYIUT" >> /etc/bash.bashrc
-echo "ftp_proxy=$PROXYIUT" >> /etc/bash.bashrc
+sudo echo "http_proxy=$PROXYIUT" >> /etc/bash.bashrc
+sudo echo "https_proxy=$PROXYIUT" >> /etc/bash.bashrc
+sudo echo "ftp_proxy=$PROXYIUT" >> /etc/bash.bashrc
 
-echo "Acquire::http::Proxy \"$PROXYIUT\";" > /etc/apt/apt.conf.d/80proxy
+sudo echo "Acquire::http::Proxy \"$PROXYIUT\";" > /etc/apt/apt.conf.d/80proxy
 
 exit
 
