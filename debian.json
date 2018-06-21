@@ -44,7 +44,9 @@
       "vm_name": "debian-{{user `debian_version`}}-amd64",
       "vboxmanage": [
         [ "modifyvm", "{{.Name}}", "--memory", "512" ],
-        [ "modifyvm", "{{.Name}}", "--cpus", "1" ]
+        [ "modifyvm", "{{.Name}}", "--cpus", "1" ],
+        [ "modifyvm", "{{.Name}}", "--usb", "on" ],
+        [ "modifyvm", "{{.Name}}", "--mouse", "usbtablet" ]
       ]
     }
   ],
