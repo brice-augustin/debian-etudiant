@@ -88,7 +88,7 @@ then
   ####
   # TODO : navigateur Web
   echo "TODO"
-  
+
   ####
   # Verrouillage numérique
   # P
@@ -99,6 +99,8 @@ then
   # (script d'init interfaces au démarrage, udev persistent-net)
   ####
 fi
+
+# Effacer /var/cache/apt/archives
 
 cd prep
 ./masterprep.sh
