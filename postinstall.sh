@@ -102,5 +102,8 @@ fi
 
 # Effacer /var/cache/apt/archives
 
+####
+# Préparation au clonage ou à l'exportation OVA
+####
 cd prep
 ./masterprep.sh
