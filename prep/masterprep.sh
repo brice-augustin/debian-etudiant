@@ -10,7 +10,7 @@
 if ! grep net.ifnames=0 /proc/cmdline > /dev/null 2>&1
 then
   # Retirer le debian-installer (change la resolution par défaut)
-  sed -i -E '/GRUB_CMDLINE_LINUX/s/debian-installer=[^ "]+//' /etc/default/grub
+  #sed -i -E '/GRUB_CMDLINE_LINUX/s/debian-installer=[^ "]+//' /etc/default/grub
 
   # ajouter net.ifnames=0 biosdevname=0
   sed -i '/GRUB_CMDLINE_LINUX/s/"$/ net.ifnames=0 biosdevname=0"/' /etc/default/grub
