@@ -53,7 +53,7 @@
   "provisioners": [
     {
       "type": "shell",
-      "script": "customize.sh"
+      "script": "postinstall.sh"
      }
   ]
 }
