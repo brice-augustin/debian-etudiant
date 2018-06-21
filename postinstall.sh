@@ -1,42 +1,103 @@
 #!/bin/bash
 
-sleep 5
-
 PROXYIUT="http://proxy.iutcv.fr:3128"
 
-echo vitrygtr | sudo -S apt-get update
+# facter
 
-#sudo su
+if [ $DEPLOY_TYPE == "vm" ]
+then
+  sleep 5
+fi
 
-sudo apt-get install -y dnsutils
+apt-get update -y
+
+if [ $DEPLOY_TYPE != "vm" ]
+then
+  ####
+  # Network manager
+  # P
+  ####
+  apt-get remove --purge network-manager
+  if dpkg -l wicd | grep -E "ii\s+wicd"
+  then
+    apt-get remove --purge wicd
+  fi
+
+  ####
+  # VirtualBox
+  # P
+  ####
+  echo "deb http://download.virtualbox.org/virtualbox/debian stretch contrib" > /etc/apt/sources.list.d/virtualbox.list
+
+  wget https://www.virtualbox.org/download/oracle_vbox_2016.asc
+  apt-key add oracle_vbox_2016.asc
+
+  apt-get update -y
+  # 651 Mo en plus
+  apt-get install -y virtualbox-5.1
+
+  ####
+  # Packages
+  # P
+  ####
+  #Firefox, Open Office
+  apt-get install -y sudo
+  apt-get install -y wireshark
+  apt-get install -y openssh-server filezilla
+  apt-get install -y  evince
+fi
 
 ####
-# Interfaces
+# Packages
+# P+VM
 ####
-# Configuration dynamique persistante pour toutes les cartes
+apt-get install -y tcpdump
+apt-get install -y net-tools iperf iptraf bridge-utils
+apt-get install -y netcat
 
-echo "auto lo" | sudo tee /etc/network/interfaces
-echo "iface lo inet loopback" | sudo tee -a /etc/network/interfaces
-
-ethif=$(ip -o l show | awk -F': ' '{print $2}' | grep "^eth")
-
-for iface in $ethif
-do
-  echo "auto $iface" | sudo tee -a /etc/network/interfaces
-  echo "iface $iface inet dhcp" | sudo tee -a /etc/network/interfaces
-done
+####
+# sudo
+# P+VM
+####
+adduser etudiant sudo
 
 ####
 # Proxy
 # P+VM
 ####
 # Alternative : ajouter ça dans /etc/profile.d/proxy.sh
-# sudo cmd > fich : permission denied car la redirection est effectuée par le shell
-# avec les droits de l'utilisateur courant.
-# Utiliser tee (pour >) ou tee -a (pour >>)
-# https://blog.sleeplessbeastie.eu/2013/12/03/how-to-redirect-command-output-using-sudo/
-echo "http_proxy=$PROXYIUT" | sudo tee -a /etc/bash.bashrc
-echo "https_proxy=$PROXYIUT" | sudo tee -a /etc/bash.bashrc
-echo "ftp_proxy=$PROXYIUT" | sudo tee -a /etc/bash.bashrc
+echo "http_proxy=$PROXYIUT" >> /etc/bash.bashrc
+echo "https_proxy=$PROXYIUT" >> /etc/bash.bashrc
+echo "ftp_proxy=$PROXYIUT" >> /etc/bash.bashrc
 
-echo "Acquire::http::Proxy \"$PROXYIUT\";" | sudo tee /etc/apt/apt.conf.d/80proxy
+echo "Acquire::http::Proxy \"$PROXYIUT\";" > /etc/apt/apt.conf.d/80proxy
+
+####
+# SSH
+# P+VM
+####
+# Désactiver la connexion SSH avec le login root
+# (activé pour provisionner une VM packer)
+sed -i '/^PermitRootLogin/s/^/#/' /etc/ssh/sshd_config
+
+if [ $DEPLOY_TYPE != "vm" ]
+then
+  ####
+  # Proxy du navigateur Web
+  # P
+  ####
+  # TODO : navigateur Web
+
+  ####
+  # Verrouillage numérique
+  # P
+  ####
+
+  ####
+  # Préparation du master
+  # (script d'init interfaces au démarrage, udev persistent-net)
+  ####
+fi
+
+cd prep
+./masterprep.sh
