@@ -1,0 +1,11 @@
+[Unit]
+Description=Config du fichier interfaces
+After=tlp-init.service
+
+[Service]
+Type=oneshot
+RemainAfterExit=no
+ExecStart=/usr/local/bin/init-interfaces.sh
+
+[Install]
+WantedBy=multi-user.target
