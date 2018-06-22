@@ -102,6 +102,15 @@ fi
 
 # Effacer /var/cache/apt/archives
 
+# Timeout /etc/dhcp/dhclient.conf ?
+
+####
+# ifupdown
+####
+sed -i 's/^ExecStart=.*$/ExecStart=\/sbin\/ifup-hook.sh/' /etc/systemd/system/network-online.target.wants/networking.service
+
+cp prep/ifup-hook.sh /sbin
+
 ####
 # Préparation au clonage ou à l'exportation OVA
 ####
