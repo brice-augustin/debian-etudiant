@@ -1,6 +1,9 @@
 #!/bin/bash
 
-ethif=$(/sbin/ifquery --list | grep ^eth)
+# ifquery --list : only interfaces marked as auto in config file
+ethif=$(ip -o l show | awk -F': ' '{print $2}' | grep "^eth")
+
+echo $ethif > /root/toto
 
 for iface in $ethif
 do
@@ -8,13 +11,15 @@ do
 done
 
 # Let the system activate the NIC
-sleep 5
+sleep 1
 
 for iface in $ethif
 do
   # Cable connected
   if grep up /sys/class/net/$iface/operstate > /dev/null 2>&1
   then
+    # $iface might not exist in interfaces file. Don't care.
     /sbin/ifup $iface --read-environment
+    echo up $iface >> /root/toto
   fi
 done
