@@ -107,9 +107,14 @@ fi
 ####
 # ifupdown
 ####
-sed -i 's/^ExecStart=.*$/ExecStart=\/sbin\/ifup-hook.sh/' /etc/systemd/system/network-online.target.wants/networking.service
+# Perdu 2 heures parceque sed détruit le lien symbolique vers /lib/systemd/system/...
+# https://unix.stackexchange.com/questions/192012/how-do-i-prevent-sed-i-from-destroying-symlinks
+sed -i --follow-symlinks 's/^ExecStart=.*$/ExecStart=\/sbin\/ifup-hook.sh/' /etc/systemd/system/network-online.target.wants/networking.service
 
 cp prep/ifup-hook.sh /sbin
+
+# Reload les unités pour prendre en compte notre modif
+systemctl daemon-reload
 
 ####
 # Préparation au clonage ou à l'exportation OVA
