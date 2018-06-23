@@ -94,30 +94,42 @@ then
   # P
   ####
 
-  ####
-  # Préparation du master
-  # (script d'init interfaces au démarrage, udev persistent-net)
-  ####
 fi
 
-# Effacer /var/cache/apt/archives
+# TODO : Effacer /var/cache/apt/archives
 
-# Timeout /etc/dhcp/dhclient.conf ?
+# TODO : Timeout /etc/dhcp/dhclient.conf ?
 
 ####
 # ifupdown
+# P+VM
 ####
-# Perdu 2 heures parceque sed détruit le lien symbolique vers /lib/systemd/system/...
+
+# Perdu 2 heures parce que sed détruit le lien symbolique vers /lib/systemd/system/...
 # https://unix.stackexchange.com/questions/192012/how-do-i-prevent-sed-i-from-destroying-symlinks
-sed -i --follow-symlinks 's/^ExecStart=.*$/ExecStart=\/sbin\/ifup-hook.sh/' /etc/systemd/system/network-online.target.wants/networking.service
+# De toute façon, il y a mieux (drop-in)
+#sed -i --follow-symlinks 's/^ExecStart=.*$/ExecStart=\/sbin\/ifup-hook.sh/' /etc/systemd/system/network-online.target.wants/networking.service
 
 cp prep/ifup-hook.sh /sbin
 
-# Reload les unités pour prendre en compte notre modif
+# Bug: Cannot edit units if not on a tty
+#SYSTEMD_EDITOR=tee systemctl edit networking.service << EOF
+#...
+
+# Mécanisme override de systemctl
+mkdir /etc/systemd/system/networking.service.d/
+cat > /etc/systemd/system/networking.service.d/override.conf << EOF
+[Service]
+ExecStart=
+ExecStart=/sbin/ifup-hook.sh
+EOF
+
+# Reload les unités pour prendre en compte nos modifications
 systemctl daemon-reload
 
 ####
 # Préparation au clonage ou à l'exportation OVA
+# P+VM
 ####
 cd prep
 ./masterprep.sh
