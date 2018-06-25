@@ -40,9 +40,10 @@ then
 
   apt-get update -y
   # 734 Mo en plus
-  # TODO : trouver automatiquement la dernière version disponible
-  # apt-cache search virtualbox-
-  apt-get install -y virtualbox-5.2
+  # Trouver automatiquement la dernière version disponible
+  v=$(apt-cache search virtualbox- | cut -d' ' -f1 | cut -d'-' -f2 | sort -V | tail -n 1)
+  echo "Installation de virtualbox-$v"
+  apt-get install -y virtualbox-$v
 
   ####
   # Packages
