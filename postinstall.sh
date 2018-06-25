@@ -2,16 +2,22 @@
 
 PROXYIUT="http://proxy.iutcv.fr:3128"
 
-# facter
+if [ $EUID -ne 0 ]
+then
+  echo "Doit être exécuté en tant que root"
+  exit
+fi
 
-if [ $DEPLOY_TYPE == "vm" ]
+# TODO : utiliser facter pour savoir si on est sur une VM ou un PC physique
+
+if [ "$DEPLOY_TYPE" == "vm" ]
 then
   sleep 5
 fi
 
 apt-get update -y
 
-if [ $DEPLOY_TYPE != "vm" ]
+if [ "$DEPLOY_TYPE" != "vm" ]
 then
   ####
   # Network manager
@@ -44,7 +50,7 @@ then
   apt-get install -y sudo
   apt-get install -y wireshark
   apt-get install -y openssh-server filezilla
-  apt-get install -y  evince
+  apt-get install -y  evince shutter
 fi
 
 ####
@@ -80,7 +86,7 @@ echo "Acquire::http::Proxy \"$PROXYIUT\";" > /etc/apt/apt.conf.d/80proxy
 # (activé pour provisionner une VM packer)
 sed -i '/^PermitRootLogin/s/^/#/' /etc/ssh/sshd_config
 
-if [ $DEPLOY_TYPE != "vm" ]
+if [ "$DEPLOY_TYPE" != "vm" ]
 then
   ####
   # Proxy du navigateur Web
