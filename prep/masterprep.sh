@@ -55,5 +55,5 @@ systemctl enable init-interfaces.service
 if [ "$DEPLOY_TYPE" != "vm" ]
 then
   echo "TODO : uninstall grub"
-  # apt-get remove --purge grub-common
+  apt-get remove --purge grub*
 fi
