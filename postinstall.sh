@@ -87,13 +87,13 @@ then
   # P
   ####
   # TODO : navigateur Web
-  echo "TODO"
+  echo "TODO proxy pour le navigateur"
 
   ####
   # Verrouillage numérique
   # P
   ####
-
+  echo "TODO setleds"
 fi
 
 # TODO : Effacer /var/cache/apt/archives
