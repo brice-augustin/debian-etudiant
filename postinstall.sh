@@ -74,6 +74,10 @@ adduser etudiant sudo
 # P+VM
 ####
 # Alternative : ajouter ça dans /etc/profile.d/proxy.sh
+
+# Effacer toute config de *_proxy
+sed -E -i '/(ht|f)tps?_proxy=/d' /etc/bash.bashrc
+
 echo "http_proxy=$PROXYIUT" >> /etc/bash.bashrc
 echo "https_proxy=$PROXYIUT" >> /etc/bash.bashrc
 echo "ftp_proxy=$PROXYIUT" >> /etc/bash.bashrc

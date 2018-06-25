@@ -47,3 +47,13 @@ systemctl enable init-interfaces.service
 ####
 # N'existe plus sous stretch ?
 # /etc/udev/rules.d/70-persistent-net.rules
+
+####
+# Désinstaller Grub
+# P
+####
+if [ "$DEPLOY_TYPE" != "vm" ]
+then
+  echo "TODO : uninstall grub"
+  # apt-get remove --purge grub-common
+fi
