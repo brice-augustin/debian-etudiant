@@ -3,8 +3,6 @@
 # ifquery --list : only interfaces marked as auto in config file
 ethif=$(ip -o l show | awk -F': ' '{print $2}' | grep "^eth")
 
-echo $ethif > /root/toto
-
 for iface in $ethif
 do
   ip l set $iface up
@@ -20,6 +18,5 @@ do
   then
     # $iface might not exist in interfaces file. Don't care.
     /sbin/ifup $iface --read-environment
-    echo up $iface >> /root/toto
   fi
 done
