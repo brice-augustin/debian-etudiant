@@ -39,8 +39,10 @@ then
   apt-key add oracle_vbox_2016.asc
 
   apt-get update -y
-  # 651 Mo en plus
-  apt-get install -y virtualbox-5.1
+  # 734 Mo en plus
+  # TODO : trouver automatiquement la dernière version disponible
+  # apt-cache search virtualbox-
+  apt-get install -y virtualbox-5.2
 
   ####
   # Packages
