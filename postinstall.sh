@@ -35,7 +35,7 @@ then
   ####
   echo "deb http://download.virtualbox.org/virtualbox/debian stretch contrib" > /etc/apt/sources.list.d/virtualbox.list
 
-  wget https://www.virtualbox.org/download/oracle_vbox_2016.asc
+  wget --no-check-certificate https://www.virtualbox.org/download/oracle_vbox_2016.asc
   apt-key add oracle_vbox_2016.asc
 
   apt-get update -y
