@@ -1,6 +1,7 @@
 #!/bin/bash
 
-PROXYIUT="http://proxy.iutcv.fr:3128"
+PROXYIUT="proxy.iutcv.fr"
+PROXYIUT_PORT="3128"
 
 if [ $EUID -ne 0 ]
 then
@@ -79,11 +80,40 @@ adduser etudiant sudo
 # Effacer toute config de *_proxy
 sed -E -i '/(ht|f)tps?_proxy=/d' /etc/bash.bashrc
 
-echo "http_proxy=$PROXYIUT" >> /etc/bash.bashrc
-echo "https_proxy=$PROXYIUT" >> /etc/bash.bashrc
-echo "ftp_proxy=$PROXYIUT" >> /etc/bash.bashrc
+echo "http_proxy=http://$PROXYIUT:$PROXYIUT_PORT" >> /etc/bash.bashrc
+echo "https_proxy=http://$PROXYIUT:$PROXYIUT_PORT" >> /etc/bash.bashrc
+echo "ftp_proxy=http://$PROXYIUT:$PROXYIUT_PORT" >> /etc/bash.bashrc
 
-echo "Acquire::http::Proxy \"$PROXYIUT\";" > /etc/apt/apt.conf.d/80proxy
+echo "Acquire::http::Proxy \"http://$PROXYIUT:$PROXYIUT_PORT\";" > /etc/apt/apt.conf.d/80proxy
+
+if [ "$DEPLOY_TYPE" != "vm" ]
+then
+  ####
+  # Proxy du navigateur Web
+  # P
+  ####
+
+  # https://support.mozilla.org/fr/questions/901549
+  # network.proxy.share_proxy_settings = true pour configurer le proxy HTTP pour
+  # tous les autres protocoles
+  cat > /usr/lib/firefox-esr/defaults/pref/local-settings.js << EOF
+pref("network.proxy.http", "$PROXYIUT");
+pref("network.proxy.http_port", "$PROXYIUT_PORT");
+pref("network.proxy.ssl", "$PROXYIUT");
+pref("network.proxy.ssl_port", "$PROXYIUT_PORT");
+pref("network.proxy.ftp", "$PROXYIUT");
+pref("network.proxy.ftp_port", "$PROXYIUT_PORT");
+pref("network.proxy.no_proxies_on", "localhost,127.0.0.1,172.16.0.0/26,*.iutcv.fr");
+pref("network.proxy.type", "1");
+EOF
+
+
+  ####
+  # Verrouillage numérique
+  # P
+  ####
+  echo "TODO setleds"
+fi
 
 ####
 # SSH
@@ -92,22 +122,6 @@ echo "Acquire::http::Proxy \"$PROXYIUT\";" > /etc/apt/apt.conf.d/80proxy
 # Désactiver la connexion SSH avec le login root
 # (activé pour provisionner une VM packer)
 sed -i '/^PermitRootLogin/s/^/#/' /etc/ssh/sshd_config
-
-if [ "$DEPLOY_TYPE" != "vm" ]
-then
-  ####
-  # Proxy du navigateur Web
-  # P
-  ####
-  # TODO : navigateur Web
-  echo "TODO proxy pour le navigateur"
-
-  ####
-  # Verrouillage numérique
-  # P
-  ####
-  echo "TODO setleds"
-fi
 
 # TODO : Effacer /var/cache/apt/archives
 
@@ -139,6 +153,24 @@ EOF
 
 # Reload les unités pour prendre en compte nos modifications
 systemctl daemon-reload
+
+####
+# Désinstaller Grub
+# P
+####
+if [ "$DEPLOY_TYPE" != "vm" ]
+then
+  apt-get remove --purge grub*
+
+  # Effacer grub.cfg sinon il va perturber os-prober lors de la génération
+  # du grub.cfg final par restore hope
+  # XXX Laisser un grub.cfg simple (juste Debian etudiant) utilisant
+  # l'ancien nommage des cartes ?
+  if [ -f /boot/grub/grub.cfg ]
+  then
+    rm /boot/grub/grub.cfg
+  fi
+fi
 
 ####
 # Préparation au clonage ou à l'exportation OVA
