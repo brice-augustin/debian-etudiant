@@ -1,7 +1,8 @@
 #!/bin/bash
 
 # ifquery --list : only interfaces marked as auto in config file
-ethif=$(ip -o l show | awk -F': ' '{print $2}' | grep "^eth")
+# Accepter le nouveau nommage des cartes (en) mais aussi l'ancien (eth)
+ethif=$(ip -o l show | awk -F': ' '{print $2}' | grep -E "^(eth|en)")
 
 for iface in $ethif
 do
