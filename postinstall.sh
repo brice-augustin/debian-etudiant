@@ -53,7 +53,7 @@ then
   apt-get install -y sudo
   apt-get install -y wireshark
   apt-get install -y openssh-server filezilla
-  apt-get install -y  evince shutter
+  apt-get install -y evince shutter
 fi
 
 ####
