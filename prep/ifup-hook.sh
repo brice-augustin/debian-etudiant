@@ -1,6 +1,7 @@
 #!/bin/bash
 
 # Solution 1 : lancer ifup en tâche de fond
+# https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=675372
 
 if [ "$1" == "start" ]
 then
