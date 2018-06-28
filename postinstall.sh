@@ -81,9 +81,9 @@ adduser etudiant sudo
 # Effacer toute config de *_proxy
 sed -E -i '/(ht|f)tps?_proxy=/d' /etc/bash.bashrc
 
-echo "http_proxy=http://$PROXYIUT:$PROXYIUT_PORT" >> /etc/bash.bashrc
-echo "https_proxy=http://$PROXYIUT:$PROXYIUT_PORT" >> /etc/bash.bashrc
-echo "ftp_proxy=http://$PROXYIUT:$PROXYIUT_PORT" >> /etc/bash.bashrc
+echo "export http_proxy=http://$PROXYIUT:$PROXYIUT_PORT" >> /etc/bash.bashrc
+echo "export https_proxy=http://$PROXYIUT:$PROXYIUT_PORT" >> /etc/bash.bashrc
+echo "export ftp_proxy=http://$PROXYIUT:$PROXYIUT_PORT" >> /etc/bash.bashrc
 
 echo "Acquire::http::Proxy \"http://$PROXYIUT:$PROXYIUT_PORT\";" > /etc/apt/apt.conf.d/80proxy
 
@@ -97,14 +97,15 @@ then
   # https://support.mozilla.org/fr/questions/901549
   # network.proxy.share_proxy_settings = true pour configurer le proxy HTTP pour
   # tous les autres protocoles
+  # pref("network.proxy.ssl", "$PROXYIUT");
+  # pref("network.proxy.ssl_port", "$PROXYIUT_PORT");
+  # pref("network.proxy.ftp", "$PROXYIUT");
+  # pref("network.proxy.ftp_port", "$PROXYIUT_PORT");
   cat > /usr/lib/firefox-esr/defaults/pref/local-settings.js << EOF
 pref("network.proxy.http", "$PROXYIUT");
-pref("network.proxy.http_port", "$PROXYIUT_PORT");
-pref("network.proxy.ssl", "$PROXYIUT");
-pref("network.proxy.ssl_port", "$PROXYIUT_PORT");
-pref("network.proxy.ftp", "$PROXYIUT");
-pref("network.proxy.ftp_port", "$PROXYIUT_PORT");
-pref("network.proxy.no_proxies_on", "localhost,127.0.0.1,172.16.0.0/26,*.iutcv.fr");
+pref("network.proxy.http_port", $PROXYIUT_PORT);
+pref("network.proxy.share_proxy_settings", true);
+pref("network.proxy.no_proxies_on", "localhost,127.0.0.1,172.16.0.0/24,*.iutcv.fr");
 pref("network.proxy.type", "1");
 EOF
 
@@ -163,7 +164,7 @@ systemctl daemon-reload
 ####
 if [ "$DEPLOY_TYPE" != "vm" ]
 then
-  apt-get remove --purge grub*
+  apt-get remove -y --purge grub*
 
   # Effacer grub.cfg sinon il va perturber os-prober lors de la génération
   # du grub.cfg final par restore hope
