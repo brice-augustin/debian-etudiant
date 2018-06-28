@@ -64,6 +64,7 @@ fi
 apt-get install -y tcpdump
 apt-get install -y net-tools iperf iptraf bridge-utils
 apt-get install -y netcat
+apt-get install -y exfat-fuse
 
 ####
 # sudo
@@ -148,7 +149,9 @@ mkdir /etc/systemd/system/networking.service.d/
 cat > /etc/systemd/system/networking.service.d/override.conf << EOF
 [Service]
 ExecStart=
-ExecStart=/sbin/ifup-hook.sh
+ExecStart=/sbin/ifup-hook.sh start
+ExecStop=
+ExecStop=/sbin/ifup-hook.sh stop
 EOF
 
 # Reload les unités pour prendre en compte nos modifications
