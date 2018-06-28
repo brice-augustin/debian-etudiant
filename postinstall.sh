@@ -146,7 +146,7 @@ cp prep/ifup-hook.sh /sbin
 #...
 
 # Mécanisme override de systemctl
-mkdir /etc/systemd/system/networking.service.d/
+mkdir -p /etc/systemd/system/networking.service.d/
 cat > /etc/systemd/system/networking.service.d/override.conf << EOF
 [Service]
 ExecStart=
