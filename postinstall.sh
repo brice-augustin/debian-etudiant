@@ -159,21 +159,40 @@ EOF
 systemctl daemon-reload
 
 ####
-# Désinstaller Grub
+# Grub
 # P
 ####
+# TODO : le faire dans un chroot à partir de Restore Hope
 if [ "$DEPLOY_TYPE" != "vm" ]
 then
+  # Configurer grub.cfg pour qu'os_prober (sur Restore Hope) ajoute
+  # la bonne entrée
+  apt-get install -y grub-efi-amd64
+
+  if ! grep "^GRUB_CMDLINE_LINUX=.*net.ifnames=0" /etc/default/grub > /dev/null 2>&1
+  then
+    sed -i '/GRUB_CMDLINE_LINUX/s/"$/ net.ifnames=0 biosdevname=0"/' /etc/default/grub
+  fi
+
+  sed -i '/GRUB_DISABLE_RECOVERY=/s/^.*$/GRUB_DISABLE_RECOVERY=true/' /etc/default/grub
+
+  echo "GRUB_DISABLE_SUBMENU=y" >> /etc/default/grub
+
+  # Ne pas ajouter d'entrée "setup" pour EFI
+  chmod a-x /etc/grub.d/30_uefi-firmware
+  # Ne pas prober les autres OS
+  chmod a-x /etc/grub.d/30_os-prober
+
+  # Génère une unique entrée (pour le Debian etudiant)
+  update-grub
+
+  cp /boot/grub/grub.cfg /root/grub.cfg
+
   apt-get remove -y --purge grub*
 
-  # Effacer grub.cfg sinon il va perturber os-prober lors de la génération
-  # du grub.cfg final par restore hope
-  # XXX Laisser un grub.cfg simple (juste Debian etudiant) utilisant
-  # l'ancien nommage des cartes ?
-  if [ -f /boot/grub/grub.cfg ]
-  then
-    rm /boot/grub/grub.cfg
-  fi
+  # Copier grub.cfg généré précédemment
+  mkdir -p /boot/grub
+  cp /root/grub.cfg /boot/grub
 fi
 
 ####
