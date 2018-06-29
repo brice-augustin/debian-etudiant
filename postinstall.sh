@@ -16,6 +16,15 @@ then
   sleep 5
 fi
 
+####
+# Préparation au clonage ou à l'exportation OVA
+# Doit être lancé au début pour configurer le proxy
+# P+VM
+####
+pushd prep
+./masterprep.sh
+popd
+
 apt-get update -y
 
 if [ "$DEPLOY_TYPE" != "vm" ]
@@ -72,21 +81,6 @@ apt-get install -y exfat-fuse
 ####
 adduser etudiant sudo
 
-####
-# Proxy
-# P+VM
-####
-# Alternative : ajouter ça dans /etc/profile.d/proxy.sh
-
-# Effacer toute config de *_proxy
-sed -E -i '/(ht|f)tps?_proxy=/d' /etc/bash.bashrc
-
-echo "export http_proxy=http://$PROXYIUT:$PROXYIUT_PORT" >> /etc/bash.bashrc
-echo "export https_proxy=http://$PROXYIUT:$PROXYIUT_PORT" >> /etc/bash.bashrc
-echo "export ftp_proxy=http://$PROXYIUT:$PROXYIUT_PORT" >> /etc/bash.bashrc
-
-echo "Acquire::http::Proxy \"http://$PROXYIUT:$PROXYIUT_PORT\";" > /etc/apt/apt.conf.d/80proxy
-
 if [ "$DEPLOY_TYPE" != "vm" ]
 then
   ####
@@ -109,12 +103,6 @@ pref("network.proxy.no_proxies_on", "localhost,127.0.0.1,172.16.0.0/24,*.iutcv.f
 pref("network.proxy.type", "1");
 EOF
 
-
-  ####
-  # Verrouillage numérique
-  # P
-  ####
-  echo "TODO setleds"
 fi
 
 ####
@@ -128,76 +116,3 @@ sed -i '/^PermitRootLogin/s/^/#/' /etc/ssh/sshd_config
 # TODO : Effacer /var/cache/apt/archives
 
 # TODO : Timeout /etc/dhcp/dhclient.conf ?
-
-####
-# ifupdown
-# P+VM
-####
-
-# Perdu 2 heures parce que sed détruit le lien symbolique vers /lib/systemd/system/...
-# https://unix.stackexchange.com/questions/192012/how-do-i-prevent-sed-i-from-destroying-symlinks
-# De toute façon, il y a mieux (drop-in)
-#sed -i --follow-symlinks 's/^ExecStart=.*$/ExecStart=\/sbin\/ifup-hook.sh/' /etc/systemd/system/network-online.target.wants/networking.service
-
-cp prep/ifup-hook.sh /sbin
-
-# Bug: Cannot edit units if not on a tty
-#SYSTEMD_EDITOR=tee systemctl edit networking.service << EOF
-#...
-
-# Mécanisme override de systemctl
-mkdir -p /etc/systemd/system/networking.service.d/
-cat > /etc/systemd/system/networking.service.d/override.conf << EOF
-[Service]
-ExecStart=
-ExecStart=/sbin/ifup-hook.sh start
-ExecStop=
-ExecStop=/sbin/ifup-hook.sh stop
-EOF
-
-# Reload les unités pour prendre en compte nos modifications
-systemctl daemon-reload
-
-####
-# Grub
-# P
-####
-# TODO : le faire dans un chroot à partir de Restore Hope
-if [ "$DEPLOY_TYPE" != "vm" ]
-then
-  # Configurer grub.cfg pour qu'os_prober (sur Restore Hope) ajoute
-  # la bonne entrée
-  apt-get install -y grub-efi-amd64
-
-  if ! grep "^GRUB_CMDLINE_LINUX=.*net.ifnames=0" /etc/default/grub > /dev/null 2>&1
-  then
-    sed -i '/GRUB_CMDLINE_LINUX/s/"$/ net.ifnames=0 biosdevname=0"/' /etc/default/grub
-  fi
-
-  sed -i '/GRUB_DISABLE_RECOVERY=/s/^.*$/GRUB_DISABLE_RECOVERY=true/' /etc/default/grub
-
-  echo "GRUB_DISABLE_SUBMENU=y" >> /etc/default/grub
-
-  # Ne pas ajouter d'entrée "setup" pour EFI
-  chmod a-x /etc/grub.d/30_uefi-firmware
-  # Ne pas prober les autres OS
-  chmod a-x /etc/grub.d/30_os-prober
-
-  # Génère une unique entrée (pour le Debian etudiant)
-  update-grub
-
-  cp /boot/grub/grub.cfg /root/grub.cfg
-
-  apt-get remove -y --purge grub*
-
-  # Copier grub.cfg généré précédemment
-  mkdir -p /boot/grub
-  cp /root/grub.cfg /boot/grub
-fi
-
-####
-# Préparation au clonage ou à l'exportation OVA
-# P+VM
-####
-cd prep
-./masterprep.sh
