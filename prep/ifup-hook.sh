@@ -10,6 +10,10 @@ else
   /sbin/ifdown -a --read-environment --exclude=lo &
 fi
 
+# Laisser le temps à ifupdown de lancer dhclient (?)
+# Sinon il sera tué quand ce script se terminera (?)
+sleep 1
+
 exit
 
 # Solution 2 : lancer ifup slt sur les cartes avec un câble branché.
