@@ -79,6 +79,7 @@ ExecStop=/sbin/ifup-hook.sh stop
 EOF
 
 # Reload les unités pour prendre en compte nos modifications
+# "Running in chroot, ignoring request." si lancé depuis chroot
 systemctl daemon-reload
 
 ####
