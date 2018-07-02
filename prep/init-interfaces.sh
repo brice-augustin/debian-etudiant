@@ -12,7 +12,7 @@ do
   echo "iface $iface inet dhcp" >> /etc/network/interfaces
 done
 
-echo "# GLOP" >> /etc/network/interfaces
-echo "#" $(date) >> /etc/network/interfaces
+#echo "# GLOP" >> /etc/network/interfaces
+#echo "#" $(date) >> /etc/network/interfaces
 
 systemctl disable init-interfaces.service
