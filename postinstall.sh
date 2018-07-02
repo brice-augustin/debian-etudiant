@@ -111,7 +111,7 @@ pref("network.proxy.http", "$PROXYIUT");
 pref("network.proxy.http_port", $PROXYIUT_PORT);
 pref("network.proxy.share_proxy_settings", true);
 pref("network.proxy.no_proxies_on", "localhost,127.0.0.1,172.16.0.0/24,*.iutcv.fr");
-pref("network.proxy.type", "1");
+pref("network.proxy.type", 1);
 EOF
 
   ####
@@ -138,7 +138,7 @@ EOF
   echo "/dev/sda6    /mnt/DATA   ntfs    0    0" >> /etc/fstab
 
   # Raccourci dans Nautilus
-  sudo -u etudiant bash -c "echo \"file:///mnt/DATA DATA\" >> ~/.config/gtk-3.0/bookmarks"
+  sudo -u etudiant bash -c "mkdir -p ~/.config/gtk-3.0/; echo \"file:///mnt/DATA DATA\" >> ~/.config/gtk-3.0/bookmarks"
 fi
 
 ####
