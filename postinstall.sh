@@ -33,10 +33,10 @@ then
   # Network manager
   # P
   ####
-  apt-get remove --purge network-manager
+  apt-get remove --purge -y network-manager
   if dpkg -l wicd | grep -E "ii\s+wicd"
   then
-    apt-get remove --purge wicd
+    apt-get remove --purge -y wicd
   fi
 
   ####
@@ -49,6 +49,10 @@ then
   apt-key add oracle_vbox_2016.asc
 
   apt-get update -y
+
+  # Nécessaire pour installer VirtualBox
+  apt-get install -y "linux-headers-$(uname -r)"
+
   # 734 Mo en plus
   # Trouver automatiquement la dernière version disponible
   v=$(apt-cache search virtualbox- | cut -d' ' -f1 | cut -d'-' -f2 | sort -V | tail -n 1)
@@ -58,9 +62,16 @@ then
   ####
   # Packages
   # P
+  # TODO : ne pas installer les "utilitaires usuels du système" ?
+  # Liste : aptitude search ~pstandard ~prequired ~pimportant -F%p
+  # Source https://wiki.debian.org/tasksel#A.22standard.22_task
   ####
   #Firefox, Open Office
   apt-get install -y sudo
+
+  # Anticiper la question de l'installateur
+  echo "wireshark-common wireshark-common/install-setuid boolean false" | debconf-set-selections
+
   apt-get install -y wireshark
   apt-get install -y openssh-server filezilla
   apt-get install -y evince shutter
@@ -103,6 +114,31 @@ pref("network.proxy.no_proxies_on", "localhost,127.0.0.1,172.16.0.0/24,*.iutcv.f
 pref("network.proxy.type", "1");
 EOF
 
+  ####
+  # Partition DATA
+  # P
+  ####
+  mkdir /mnt/DATA
+
+  win=$(fdisk -l | grep Microsoft | cut -d ' ' -f 1)
+
+  for p in $win
+  do
+    if blkid $p | grep ntfs > /dev/null 2>&1
+    then
+      mount $p /mnt/DATA
+      if [ ! -d /mnt/DATA/Windows ]
+      then
+        echo $p
+      fi
+      umount /mnt/DATA
+    fi
+  done
+
+  echo "/dev/sda6    /mnt/DATA   ntfs    0    0" >> /etc/fstab
+
+  # Raccourci dans Nautilus
+  echo "file:///mnt/DATA DATA" >> .config/gtk-3.0/bookmarks
 fi
 
 ####
