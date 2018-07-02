@@ -83,6 +83,20 @@ EOF
 systemctl daemon-reload
 
 ####
+# Swap
+# https://lists.debian.org/debian-user/2017/09/msg00866.html
+####
+# /dev/sda5 -> \/dev\/sda5 sinon sed couine
+swap=$(swapon -s | grep "^/dev" | awk '{print $1}' | sed 's/\//\\\//g')
+
+# TODO : remplacer par l'UUID du swap du Debian etudiant (ou l'inverse)
+sed -i -E "/ swap /s/^UUID=[^ ]+/$swap/" /etc/fstab
+
+echo "" > /etc/initramfs-tools/conf.d/resume
+
+update-initramfs -u
+
+####
 # Empecher renommage des cartes réseau lors du clonage
 # P
 ####
