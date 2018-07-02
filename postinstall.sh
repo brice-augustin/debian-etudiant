@@ -118,7 +118,7 @@ EOF
   # Partition DATA
   # P
   ####
-  mkdir /mnt/DATA
+  mkdir -p /mnt/DATA
 
   win=$(fdisk -l | grep Microsoft | cut -d ' ' -f 1)
 
@@ -138,7 +138,7 @@ EOF
   echo "/dev/sda6    /mnt/DATA   ntfs    0    0" >> /etc/fstab
 
   # Raccourci dans Nautilus
-  echo "file:///mnt/DATA DATA" >> .config/gtk-3.0/bookmarks
+  sudo -u etudiant bash -c "echo \"file:///mnt/DATA DATA\" >> ~/.config/gtk-3.0/bookmarks"
 fi
 
 ####
