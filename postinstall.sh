@@ -90,15 +90,6 @@ then
   ####
   wget --no-check-certificate https://releases.hashicorp.com/packer/1.2.4/packer_1.2.4_linux_amd64.zip -O packer.zip
   unzip -o -d /usr/local/bin packer.zip
-  #wget --no-check-certificate https://atom.io/download/deb -O atom.deb
-  #apt-get install -y git
-  #dpkg -i atom.deb
-
-  ####
-  # Packer
-  ####
-  #wget --no-check-certificate https://releases.hashicorp.com/packer/1.2.4/packer_1.2.4_linux_amd64.zip -O packer.zip
-  #unzip -o -d /usr/local/bin packer.zip
 fi
 
 ####
