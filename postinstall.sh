@@ -215,18 +215,3 @@ sed -i '/^PermitRootLogin/s/^/#/' /etc/ssh/sshd_config
 # TODO : Effacer /var/cache/apt/archives
 
 # TODO : Timeout /etc/dhcp/dhclient.conf ?
-
-echo "REMOVE THIS !"
-
-####
-# Atom
-####
-wget --no-check-certificate https://atom.io/download/deb -O atom.deb
-apt-get install -y git
-dpkg -i atom.deb
-
-####
-# Packer
-####
-wget --no-check-certificate https://releases.hashicorp.com/packer/1.2.4/packer_1.2.4_linux_amd64.zip -O packer.zip
-unzip -o -d /usr/local/bin packer.zip
