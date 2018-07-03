@@ -79,15 +79,17 @@ then
   ####
   # Atom
   ####
-  #wget --no-check-certificate https://atom.io/download/deb -O atom.deb
-  #apt-get install -y git
-  #dpkg -i atom.deb
+  wget --no-check-certificate https://atom.io/download/deb -O atom.deb
+  apt-get install -y git
+  dpkg -i atom.deb
 
   ####
   # Packer
+  # Pas de lien vers la latest version :
+  # https://github.com/hashicorp/terraform/issues/9803
   ####
-  #wget --no-check-certificate https://releases.hashicorp.com/packer/1.2.4/packer_1.2.4_linux_amd64.zip -O packer.zip
-  #unzip -o -d /usr/local/bin packer.zip
+  wget --no-check-certificate https://releases.hashicorp.com/packer/1.2.4/packer_1.2.4_linux_amd64.zip -O packer.zip
+  unzip -o -d /usr/local/bin packer.zip
 fi
 
 ####
@@ -132,9 +134,9 @@ pref("network.proxy.http", "$PROXYIUT");
 pref("network.proxy.http_port", $PROXYIUT_PORT);
 pref("network.proxy.share_proxy_settings", true);
 pref("network.proxy.ssl", "$PROXYIUT");
-pref("network.proxy.ssl_port", "$PROXYIUT_PORT");
+pref("network.proxy.ssl_port", $PROXYIUT_PORT);
 pref("network.proxy.ftp", "$PROXYIUT");
-pref("network.proxy.ftp_port", "$PROXYIUT_PORT");
+pref("network.proxy.ftp_port", $PROXYIUT_PORT);
 pref("network.proxy.no_proxies_on", "localhost,127.0.0.1,172.16.0.0/24,*.iutcv.fr");
 pref("network.proxy.type", 1);
 EOF
@@ -178,6 +180,28 @@ EOF
   else
     echo "Pas de partition de données sur le disque."
   fi
+
+  ####
+  # Gnome terminal
+  # dconf dump / n'affiche pas toutes les valeurs, slt les valeurs modifiées
+  # Identifier une clé : modifier manuellement, puis dconf dump / pour voir les différences
+  # https://forums.opensuse.org/showthread.php/513424-how-to-change-gnome-terminal-colors-from-cli
+  # https://www.hadji.co/switch-terminal-colors-at-night/
+  ####
+
+  # Erreurs mais fonctionne quand même
+  # (dconf:548): dconf-CRITICAL **: unable to create directory '/run/user/1000/dconf': Permission non accordée.  dconf will not work properly.
+  # Escaper les $ sinon les variables sont substituées trop tôt !
+  # https://stackoverflow.com/questions/28793746/setting-variable-in-bash-c
+  sudo -u etudiant bash -c "export \$(dbus-launch) \
+        && p=\$(gsettings get org.gnome.Terminal.ProfilesList default | cut -d \' -f 2) \
+        && dconf write /org/gnome/terminal/legacy/profiles:/:\$p/use-theme-colors \"false\" \
+        && dconf write /org/gnome/terminal/legacy/profiles:/:\$p/background-color \"'rgb(50,150,50)'\" \
+        && dconf write /org/gnome/terminal/legacy/profiles:/:\$p/foreground-color \"'rgb(200,200,100)'\""
+
+  ####
+  # Gnome Favoris
+  ####
 fi
 
 ####
@@ -191,18 +215,3 @@ sed -i '/^PermitRootLogin/s/^/#/' /etc/ssh/sshd_config
 # TODO : Effacer /var/cache/apt/archives
 
 # TODO : Timeout /etc/dhcp/dhclient.conf ?
-
-echo "REMOVE THIS !"
-
-####
-# Atom
-####
-wget --no-check-certificate https://atom.io/download/deb -O atom.deb
-apt-get install -y git
-dpkg -i atom.deb
-
-####
-# Packer
-####
-wget --no-check-certificate https://releases.hashicorp.com/packer/1.2.4/packer_1.2.4_linux_amd64.zip -O packer.zip
-unzip -o -d /usr/local/bin packer.zip
