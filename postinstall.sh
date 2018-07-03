@@ -1,7 +1,7 @@
 #!/bin/bash
 
-PROXYIUT="proxy.iutcv.fr"
-PROXYIUT_PORT="3128"
+export PROXYIUT="proxy.iutcv.fr"
+export PROXYIUT_PORT="3128"
 
 if [ $EUID -ne 0 ]
 then
@@ -75,6 +75,19 @@ then
   apt-get install -y wireshark
   apt-get install -y openssh-server filezilla
   apt-get install -y evince shutter
+
+  ####
+  # Atom
+  ####
+  #wget --no-check-certificate https://atom.io/download/deb -O atom.deb
+  #apt-get install -y git
+  #dpkg -i atom.deb
+
+  ####
+  # Packer
+  ####
+  #wget --no-check-certificate https://releases.hashicorp.com/packer/1.2.4/packer_1.2.4_linux_amd64.zip -O packer.zip
+  #unzip -o -d /usr/local/bin packer.zip
 fi
 
 ####
@@ -95,6 +108,14 @@ adduser etudiant sudo
 if [ "$DEPLOY_TYPE" != "vm" ]
 then
   ####
+  # Verrouillage numérique en GUI
+  ####
+  apt-get install -y numlockx
+
+  # Ajout au début du script, après le shebang
+  sed -i '2a /usr/bin/numlockx on' /etc/X11/xinit/xinitrc
+
+  ####
   # Proxy du navigateur Web
   # P
   ####
@@ -110,6 +131,10 @@ then
 pref("network.proxy.http", "$PROXYIUT");
 pref("network.proxy.http_port", $PROXYIUT_PORT);
 pref("network.proxy.share_proxy_settings", true);
+pref("network.proxy.ssl", "$PROXYIUT");
+pref("network.proxy.ssl_port", "$PROXYIUT_PORT");
+pref("network.proxy.ftp", "$PROXYIUT");
+pref("network.proxy.ftp_port", "$PROXYIUT_PORT");
 pref("network.proxy.no_proxies_on", "localhost,127.0.0.1,172.16.0.0/24,*.iutcv.fr");
 pref("network.proxy.type", 1);
 EOF
@@ -166,3 +191,18 @@ sed -i '/^PermitRootLogin/s/^/#/' /etc/ssh/sshd_config
 # TODO : Effacer /var/cache/apt/archives
 
 # TODO : Timeout /etc/dhcp/dhclient.conf ?
+
+echo "REMOVE THIS !"
+
+####
+# Atom
+####
+wget --no-check-certificate https://atom.io/download/deb -O atom.deb
+apt-get install -y git
+dpkg -i atom.deb
+
+####
+# Packer
+####
+wget --no-check-certificate https://releases.hashicorp.com/packer/1.2.4/packer_1.2.4_linux_amd64.zip -O packer.zip
+unzip -o -d /usr/local/bin packer.zip
