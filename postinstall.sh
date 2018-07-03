@@ -121,6 +121,7 @@ EOF
   mkdir -p /mnt/DATA
 
   win=$(fdisk -l | grep Microsoft | cut -d ' ' -f 1)
+  part_data=""
 
   for p in $win
   do
@@ -129,16 +130,29 @@ EOF
       mount $p /mnt/DATA
       if [ ! -d /mnt/DATA/Windows ]
       then
-        echo $p
+        if [ $part_data != "" ]
+        then
+          echo "Il existe plusieurs partitions de données (NTFS sans OS)."
+          echo "Impossible de choisir."
+          exit
+        fi
+        part_data=$p
       fi
       umount /mnt/DATA
     fi
   done
 
-  echo "/dev/sda6    /mnt/DATA   ntfs    0    0" >> /etc/fstab
+  if [ $part_data != "" ]
+  then
+    sed -E -i '/\/mnt\/DATA/d' /etc/fstab
+    echo "$part_data   /mnt/DATA   ntfs    0    0" >> /etc/fstab
 
-  # Raccourci dans Nautilus
-  sudo -u etudiant bash -c "mkdir -p ~/.config/gtk-3.0/; echo \"file:///mnt/DATA DATA\" >> ~/.config/gtk-3.0/bookmarks"
+    # Raccourci dans Nautilus
+    #sudo -u etudiant bash -c "sed -E -i '/\/mnt\/DATA/d' ~/.config/gtk-3.0/bookmarks"
+    sudo -u etudiant bash -c "mkdir -p ~/.config/gtk-3.0/; echo \"file:///mnt/DATA DATA\" >> ~/.config/gtk-3.0/bookmarks"
+  else
+    echo "Pas de partition de données sur le disque."
+  fi
 fi
 
 ####
