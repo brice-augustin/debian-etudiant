@@ -157,7 +157,7 @@ EOF
       mount $p /mnt/DATA
       if [ ! -d /mnt/DATA/Windows ]
       then
-        if [ $part_data != "" ]
+        if [ "$part_data" != "" ]
         then
           echo "Il existe plusieurs partitions de données (NTFS sans OS)."
           echo "Impossible de choisir."
