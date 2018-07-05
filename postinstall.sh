@@ -208,6 +208,29 @@ EOF
             'org.gnome.Nautilus.desktop', 'virtualbox.desktop', \
             'atom.desktop', 'org.gnome.Terminal.desktop']\""
 
+  ####
+  # Gnome fond d'écran
+  ####
+  sudo -u etudiant bash -c "export \$(dbus-launch) \
+        && gsettings set org.gnome.desktop.background picture-uri \"\" \
+        && gsettings set org.gnome.desktop.background primary-color \"'rgb(200,200,200)'\""
+
+  cp prep/taint.sh /usr/local/bin
+
+  cat > /etc/systemd/system/tain.service << EOF
+[Unit]
+Description=Fond d'écran comme indicateur de restauration
+
+[Service]
+Type=oneshot
+RemainAfterExit=no
+ExecStart=/usr/local/bin/taint.sh
+
+[Install]
+After=multi-user.target
+EOF
+
+  systemctl enable taint.service
 fi
 
 ####
