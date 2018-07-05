@@ -217,7 +217,7 @@ EOF
 
   cp prep/taint.sh /usr/local/bin
 
-  cat > /etc/systemd/system/tain.service << EOF
+  cat > /etc/systemd/system/taint.service << EOF
 [Unit]
 Description=Fond d'écran comme indicateur de restauration
 
@@ -227,7 +227,7 @@ RemainAfterExit=no
 ExecStart=/usr/local/bin/taint.sh
 
 [Install]
-After=multi-user.target
+WantedBy=multi-user.target
 EOF
 
   systemctl enable taint.service
