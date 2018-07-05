@@ -196,12 +196,18 @@ EOF
   sudo -u etudiant bash -c "export \$(dbus-launch) \
         && p=\$(gsettings get org.gnome.Terminal.ProfilesList default | cut -d \' -f 2) \
         && dconf write /org/gnome/terminal/legacy/profiles:/:\$p/use-theme-colors \"false\" \
-        && dconf write /org/gnome/terminal/legacy/profiles:/:\$p/background-color \"'rgb(50,150,50)'\" \
+        && dconf write /org/gnome/terminal/legacy/profiles:/:\$p/background-color \"'rgb(50,50,50)'\" \
         && dconf write /org/gnome/terminal/legacy/profiles:/:\$p/foreground-color \"'rgb(200,200,100)'\""
 
   ####
   # Gnome Favoris
   ####
+  sudo -u etudiant bash -c "export \$(dbus-launch) \
+        && dconf write /org/gnome/shell/favorite-apps \
+            \"['firefox-esr.desktop', 'libreoffice-writer.desktop', \
+            'org.gnome.Nautilus.desktop', 'virtualbox.desktop', \
+            'atom.desktop', 'org.gnome.Terminal.desktop']"
+
 fi
 
 ####
