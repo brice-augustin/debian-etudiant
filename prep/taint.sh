@@ -1,5 +1,6 @@
 #!/bin/bash
 
+# Si le fichier existe, c'est que le système n'a pas été restauré
 if [ -f /tainted ]
 then
   color="rgb(20,20,20)"
