@@ -206,7 +206,7 @@ EOF
         && dconf write /org/gnome/shell/favorite-apps \
             \"['firefox-esr.desktop', 'libreoffice-writer.desktop', \
             'org.gnome.Nautilus.desktop', 'virtualbox.desktop', \
-            'atom.desktop', 'org.gnome.Terminal.desktop']"
+            'atom.desktop', 'org.gnome.Terminal.desktop']\""
 
 fi
 
