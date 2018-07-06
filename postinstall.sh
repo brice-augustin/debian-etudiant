@@ -242,5 +242,6 @@ fi
 sed -i '/^PermitRootLogin/s/^/#/' /etc/ssh/sshd_config
 
 # TODO : Effacer /var/cache/apt/archives
+apt autoremove
 
 # TODO : Timeout /etc/dhcp/dhclient.conf ?
