@@ -1,7 +1,6 @@
 {
   "variables": {
-      "debian_version": "9.4.0",
-      "physical_nic": "en0"
+      "debian_version": "9.4.0"
   },
   "builders": [
     {
@@ -30,8 +29,6 @@
       "headless": false,
       "http_directory": ".",
       "iso_checksum_type": "sha512",
-      "keep_registered": "True",
-      "skip_export": "True",
       "iso_checksum_url": "http://cdimage.debian.org/cdimage/release/{{user `debian_version`}}/amd64/iso-cd/SHA512SUMS",
       "iso_url": "http://cdimage.debian.org/cdimage/release/{{user `debian_version`}}/amd64/iso-cd/debian-{{user `debian_version`}}-amd64-netinst.iso",
       "ssh_username": "root",
