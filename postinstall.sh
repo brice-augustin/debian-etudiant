@@ -172,10 +172,12 @@ EOF
   if [ $part_data != "" ]
   then
     sed -E -i '/\/mnt\/DATA/d' /etc/fstab
-    echo "$part_data   /mnt/DATA   ntfs    0    0" >> /etc/fstab
+    echo "$part_data   /mnt/DATA   ntfs  ro   0    0" >> /etc/fstab
 
     # Raccourci dans Nautilus
-    #sudo -u etudiant bash -c "sed -E -i '/\/mnt\/DATA/d' ~/.config/gtk-3.0/bookmarks"
+    # Effacer la ligne, si elle existe
+    sudo -u etudiant bash -c "sed -E -i '/\/mnt\/DATA/d' ~/.config/gtk-3.0/bookmarks"
+    # Ajouter le raccourci
     sudo -u etudiant bash -c "mkdir -p ~/.config/gtk-3.0/; echo \"file:///mnt/DATA DATA\" >> ~/.config/gtk-3.0/bookmarks"
   else
     echo "Pas de partition de données sur le disque."
