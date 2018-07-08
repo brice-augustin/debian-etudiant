@@ -1,6 +1,7 @@
 {
   "variables": {
-      "debian_version": "9.4.0"
+      "debian_version": "9.4.0",
+      "debian_name": "stretch"
   },
   "builders": [
     {
@@ -27,6 +28,7 @@
       "disk_size": 8192,
       "guest_os_type": "Debian_64",
       "headless": false,
+      "format": "ova",
       "http_directory": ".",
       "iso_checksum_type": "sha512",
       "iso_checksum_url": "http://cdimage.debian.org/cdimage/release/{{user `debian_version`}}/amd64/iso-cd/SHA512SUMS",
@@ -38,7 +40,7 @@
       "shutdown_command": "echo vitrygtr | sudo -S /sbin/shutdown -hP now",
       "guest_additions_path": "VBoxGuestAdditions_{{.Version}}.iso",
       "virtualbox_version_file": ".vbox_version",
-      "vm_name": "debian-{{user `debian_version`}}-amd64",
+      "vm_name": "debian-{{user `debian_name`}}",
       "vboxmanage": [
         [ "modifyvm", "{{.Name}}", "--memory", "512" ],
         [ "modifyvm", "{{.Name}}", "--cpus", "1" ],
@@ -59,6 +61,10 @@
       "type": "shell",
       "script": "postinstall.sh",
       "environment_vars": [ "DEPLOY_TYPE=vm" ]
-     }
+    },
+    {
+        "type": "shell",
+        "inline": "rm -rf /root/prep"
+    }
   ]
 }
