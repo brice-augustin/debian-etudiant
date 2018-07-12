@@ -74,7 +74,11 @@ then
 
   apt-get install -y wireshark
   apt-get install -y openssh-server filezilla
-  apt-get install -y evince shutter
+  apt-get install -y evince
+  # Utiliser plutôt "Capture d'écran" ?
+  apt-get install -y shutter
+  # Pour José
+  apt-get install -y leafpad
 
   ####
   # Atom
@@ -90,6 +94,18 @@ then
   ####
   wget --no-check-certificate https://releases.hashicorp.com/packer/1.2.4/packer_1.2.4_linux_amd64.zip -O packer.zip
   unzip -o -d /usr/local/bin packer.zip
+
+  ####
+  # Dynamips et Dynagen
+  ####
+  sed -i '/^deb .* stretch /s/main$/main contrib non-free/' /etc/apt/sources.list
+
+  apt-get update -y
+  apt-get install -y dynamips dynagen
+
+  sed -i '/^deb .* stretch /s/ contrib non-free//' /etc/apt/sources.list
+
+  apt-get update -y
 fi
 
 ####
