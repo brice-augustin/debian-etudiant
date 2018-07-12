@@ -40,6 +40,7 @@ cp init-interfaces.sh /usr/local/bin
 cat > /etc/systemd/system/init-interfaces.service << EOF
 [Unit]
 Description=Configuration du fichier interfaces au premier boot
+Before=networking.service
 
 [Service]
 Type=oneshot
