@@ -185,7 +185,7 @@ EOF
     fi
   done
 
-  if [ $part_data != "" ]
+  if [ "$part_data" != "" ]
   then
     sed -E -i '/\/mnt\/DATA/d' /etc/fstab
     echo "$part_data   /mnt/DATA   ntfs  ro   0    0" >> /etc/fstab
