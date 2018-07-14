@@ -59,6 +59,9 @@ then
   echo "Installation de virtualbox-$v"
   apt-get install -y virtualbox-$v
 
+  # Créer vboxnet0; par défaut en DHCP
+  vboxmanage hostonlyif create
+
   ####
   # Packages
   # P
@@ -233,6 +236,12 @@ EOF
         && gsettings set org.gnome.desktop.background picture-uri \"\" \
         && gsettings set org.gnome.desktop.background primary-color \"'rgb(200,200,200)'\""
 
+  ####
+  # Désactiver les mises à jour dans Gnome
+  ####
+  sudo -u etudiant bash -c "export \$(dbus-launch) \
+        && dconf write /org/gnome/software/download-updates false"
+  
   cp prep/taint.sh /usr/local/bin
 
   cat > /etc/systemd/system/taint.service << EOF
