@@ -77,6 +77,7 @@ then
 
   apt-get install -y wireshark
   apt-get install -y openssh-server filezilla
+  apt-get install -y minicom
   apt-get install -y evince
   # Utiliser plutôt "Capture d'écran" ?
   apt-get install -y shutter
@@ -119,6 +120,8 @@ apt-get install -y tcpdump
 apt-get install -y net-tools iperf iptraf bridge-utils
 apt-get install -y netcat
 apt-get install -y exfat-fuse
+apt-get install -y ethtool
+apt-get install -y psmisc
 
 ####
 # sudo
@@ -143,7 +146,9 @@ then
 
   # https://support.mozilla.org/fr/questions/901549
   # network.proxy.share_proxy_settings = true pour configurer le proxy HTTP pour
-  # tous les autres protocoles
+  # tous les autres protocoles : pas d'effet sur la dialog box
+  # Mais sans importance il faut surtout que le proxy SSL/FTP/etc soit bien
+  # configuré dans les cases en dessous
   # pref("network.proxy.ssl", "$PROXYIUT");
   # pref("network.proxy.ssl_port", "$PROXYIUT_PORT");
   # pref("network.proxy.ftp", "$PROXYIUT");
