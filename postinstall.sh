@@ -86,6 +86,8 @@ then
   # Pour José
   apt-get install -y leafpad
 
+  apt-get install -y beep
+
   ####
   # Atom
   ####
