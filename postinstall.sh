@@ -73,9 +73,11 @@ then
   apt-get install -y sudo
 
   # Anticiper la question de l'installateur
-  echo "wireshark-common wireshark-common/install-setuid boolean false" | debconf-set-selections
-
+  echo "wireshark-common wireshark-common/install-setuid boolean true" | debconf-set-selections
   apt-get install -y wireshark
+  # Autoriser etudiant à capturer le trafic
+  usermod -a -G wireshark etudiant
+
   apt-get install -y openssh-server filezilla
   apt-get install -y minicom
   apt-get install -y evince
