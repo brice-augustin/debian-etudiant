@@ -122,6 +122,7 @@ apt-get install -y netcat
 apt-get install -y exfat-fuse
 apt-get install -y ethtool
 apt-get install -y psmisc
+apt-get install -y man
 
 ####
 # sudo
