@@ -9,6 +9,10 @@ then
   exit
 fi
 
+LOGFILE=.debian-etudiant.log
+
+rm $LOGFILE &> /dev/null
+
 # TODO : utiliser facter pour savoir si on est sur une VM ou un PC physique
 
 if [ "$DEPLOY_TYPE" == "vm" ]
@@ -25,7 +29,7 @@ pushd prep
 ./masterprep.sh
 popd
 
-apt-get update -y
+apt-get update -y >> $LOGFILE 2>&1
 
 if [ "$DEPLOY_TYPE" != "vm" ]
 then
@@ -33,10 +37,10 @@ then
   # Network manager
   # P
   ####
-  apt-get remove --purge -y network-manager
+  apt-get remove --purge -y network-manager >> $LOGFILE 2>&1
   if dpkg -l wicd | grep -E "ii\s+wicd"
   then
-    apt-get remove --purge -y wicd
+    apt-get remove --purge -y wicd >> $LOGFILE 2>&1
   fi
 
   ####
@@ -48,16 +52,16 @@ then
   wget --no-check-certificate https://www.virtualbox.org/download/oracle_vbox_2016.asc
   apt-key add oracle_vbox_2016.asc
 
-  apt-get update -y
+  apt-get update -y >> $LOGFILE 2>&1
 
   # Nécessaire pour installer VirtualBox
-  apt-get install -y "linux-headers-$(uname -r)"
+  apt-get install -y "linux-headers-$(uname -r)" >> $LOGFILE 2>&1
 
   # 734 Mo en plus
   # Trouver automatiquement la dernière version disponible
   v=$(apt-cache search virtualbox- | cut -d' ' -f1 | cut -d'-' -f2 | sort -V | tail -n 1)
   echo "Installation de virtualbox-$v"
-  apt-get install -y virtualbox-$v
+  apt-get install -y virtualbox-$v >> $LOGFILE 2>&1
 
   # Créer vboxnet0; par défaut en DHCP
   vboxmanage hostonlyif create
@@ -70,30 +74,30 @@ then
   # Source https://wiki.debian.org/tasksel#A.22standard.22_task
   ####
   #Firefox, Open Office
-  apt-get install -y sudo
+  apt-get install -y sudo >> $LOGFILE 2>&1
 
   # Anticiper la question de l'installateur
   echo "wireshark-common wireshark-common/install-setuid boolean true" | debconf-set-selections
-  apt-get install -y wireshark
+  apt-get install -y wireshark >> $LOGFILE 2>&1
   # Autoriser etudiant à capturer le trafic
   usermod -a -G wireshark etudiant
 
-  apt-get install -y openssh-server filezilla
-  apt-get install -y minicom
-  apt-get install -y evince
+  apt-get install -y openssh-server filezilla >> $LOGFILE 2>&1
+  apt-get install -y minicom >> $LOGFILE 2>&1
+  apt-get install -y evince >> $LOGFILE 2>&1
   # Utiliser plutôt "Capture d'écran" ?
-  apt-get install -y shutter
+  apt-get install -y shutter >> $LOGFILE 2>&1
   # Pour José
-  apt-get install -y leafpad
+  apt-get install -y leafpad >> $LOGFILE 2>&1
 
-  apt-get install -y beep
+  apt-get install -y beep >> $LOGFILE 2>&1
 
   ####
   # Atom
   ####
   wget --no-check-certificate https://atom.io/download/deb -O atom.deb
-  apt-get install -y git
-  dpkg -i atom.deb
+  apt-get install -y git >> $LOGFILE 2>&1
+  dpkg -i atom.deb >> $LOGFILE 2>&1
 
   ####
   # Packer
@@ -108,25 +112,25 @@ then
   ####
   sed -i '/^deb .* stretch /s/main$/main contrib non-free/' /etc/apt/sources.list
 
-  apt-get update -y
-  apt-get install -y dynamips dynagen
+  apt-get update -y >> $LOGFILE 2>&1
+  apt-get install -y dynamips dynagen >> $LOGFILE 2>&1
 
   sed -i '/^deb .* stretch /s/ contrib non-free//' /etc/apt/sources.list
 
-  apt-get update -y
+  apt-get update -y >> $LOGFILE 2>&1
 fi
 
 ####
 # Packages
 # P+VM
 ####
-apt-get install -y tcpdump
-apt-get install -y net-tools iperf iptraf bridge-utils
-apt-get install -y netcat
-apt-get install -y exfat-fuse
-apt-get install -y ethtool
-apt-get install -y psmisc
-apt-get install -y man
+apt-get install -y tcpdump >> $LOGFILE 2>&1
+apt-get install -y net-tools iperf iptraf bridge-utils >> $LOGFILE 2>&1
+apt-get install -y netcat >> $LOGFILE 2>&1
+apt-get install -y exfat-fuse >> $LOGFILE 2>&1
+apt-get install -y ethtool >> $LOGFILE 2>&1
+apt-get install -y psmisc >> $LOGFILE 2>&1
+apt-get install -y man >> $LOGFILE 2>&1
 
 ####
 # sudo
@@ -139,7 +143,7 @@ then
   ####
   # Verrouillage numérique en GUI
   ####
-  apt-get install -y numlockx
+  apt-get install -y numlockx >> $LOGFILE 2>&1
 
   # Ajout au début du script, après le shebang
   sed -i '2a /usr/bin/numlockx on' /etc/X11/xinit/xinitrc
@@ -232,12 +236,14 @@ EOF
 
   ####
   # Gnome Favoris
+  # /usr/share/applications/
   ####
   sudo -u etudiant bash -c "export \$(dbus-launch) \
         && dconf write /org/gnome/shell/favorite-apps \
             \"['firefox-esr.desktop', 'libreoffice-writer.desktop', \
             'org.gnome.Nautilus.desktop', 'virtualbox.desktop', \
-            'atom.desktop', 'org.gnome.Terminal.desktop']\""
+            'atom.desktop', 'org.gnome.Terminal.desktop', \
+            'wireshark.desktop']\""
 
   ####
   # Gnome fond d'écran
@@ -279,6 +285,6 @@ fi
 sed -i '/^PermitRootLogin/s/^/#/' /etc/ssh/sshd_config
 
 # TODO : Effacer /var/cache/apt/archives
-apt autoremove -y
+apt autoremove -y >> $LOGFILE 2>&1
 
 # TODO : Timeout /etc/dhcp/dhclient.conf ?
