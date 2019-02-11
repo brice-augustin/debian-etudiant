@@ -68,6 +68,7 @@ then
   modprobe vboxdrv
   modprobe vboxnetflt
   modprobe vboxnetadp
+  vboxmanage hostonlyif remove vboxnet0
   vboxmanage hostonlyif create
 
   ####
