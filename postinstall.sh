@@ -64,6 +64,7 @@ then
   apt-get install -y virtualbox-$v >> $LOGFILE 2>&1
 
   # Créer vboxnet0; par défaut en DHCP
+  modprobe vboxdrv
   vboxmanage hostonlyif create
 
   ####
