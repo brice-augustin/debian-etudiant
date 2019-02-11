@@ -1,6 +1,6 @@
 {
   "variables": {
-      "debian_version": "9.4.0",
+      "debian_version": "9.7.0",
       "debian_name": "stretch"
   },
   "builders": [
