@@ -63,7 +63,7 @@ then
   echo "Installation de virtualbox-$v"
   apt-get install -y virtualbox-$v >> $LOGFILE 2>&1
 
-  # Créer vboxnet0; par défaut en DHCP
+  # Créer vboxnet0; activer DHCP (pas dispo par défaut)
   # Charger les modules nécessaires
   modprobe vboxdrv
   modprobe vboxnetflt
@@ -148,6 +148,10 @@ apt-get install -y man >> $LOGFILE 2>&1
 ####
 adduser etudiant sudo
 
+####
+# Divers : proxy firefox, indicateur de restauration, ...
+# P
+####
 if [ "$DEPLOY_TYPE" != "vm" ]
 then
   ####
