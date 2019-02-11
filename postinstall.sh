@@ -268,6 +268,9 @@ EOF
   sudo -u etudiant bash -c "export \$(dbus-launch) \
         && dconf write /org/gnome/software/download-updates false"
 
+  ####
+  # Indicateur de restauration
+  ####
   cp prep/taint.sh /usr/local/bin
 
   cat > /etc/systemd/system/taint.service << EOF
@@ -284,6 +287,9 @@ WantedBy=multi-user.target
 EOF
 
   systemctl enable taint.service
+
+  [ -f /tainted ] && rm /tainted
+  [ -f /taint/tainted ] && rm /taint/tainted
 fi
 
 ####
