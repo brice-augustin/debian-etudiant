@@ -68,13 +68,13 @@ then
   modprobe vboxdrv
   modprobe vboxnetflt
   modprobe vboxnetadp
+  vboxmanage hostonlyif remove vboxnet0 &> /dev/null
+  vboxmanage dhcpserver remove --ifname vboxnet0 &> /dev/null
 
-  sudo -u etudiant bash -c "vboxmanage hostonlyif remove vboxnet0 &> /dev/null \
-  && vboxmanage dhcpserver remove --ifname vboxnet0 &> /dev/null \
-  && vboxmanage hostonlyif create \
-  && vboxmanage hostonlyif ipconfig vboxnet0 --ip 192.168.56.1 \
-  && vboxmanage dhcpserver add --ifname vboxnet0 --ip 192.168.56.2 --netmask 255.255.255.0 --lowerip 192.168.56.3 --upperip 192.168.56.254 \
-  && vboxmanage dhcpserver modify --ifname vboxnet0 --enable"
+  sudo -u etudiant bash -c "vboxmanage hostonlyif create; \
+    vboxmanage hostonlyif ipconfig vboxnet0 --ip 192.168.56.1; \
+    vboxmanage dhcpserver add --ifname vboxnet0 --ip 192.168.56.2 --netmask 255.255.255.0 --lowerip 192.168.56.3 --upperip 192.168.56.254; \
+    vboxmanage dhcpserver modify --ifname vboxnet0 --enable"
 
   ####
   # Packages
