@@ -68,8 +68,8 @@ then
   modprobe vboxdrv
   modprobe vboxnetflt
   modprobe vboxnetadp
-  vboxmanage hostonlyif remove vboxnet0 &> /dev/null
-  vboxmanage dhcpserver remove --ifname vboxnet0 &> /dev/null
+  vboxmanage hostonlyif remove vboxnet0 >> $LOGFILE 2>&1
+  vboxmanage dhcpserver remove --ifname vboxnet0 >> $LOGFILE 2>&1
 
   sudo -u etudiant bash -c "vboxmanage hostonlyif create; \
     vboxmanage hostonlyif ipconfig vboxnet0 --ip 192.168.56.1; \
@@ -302,7 +302,7 @@ fi
 ####
 # Désactiver la connexion SSH avec le login root
 # (activé pour provisionner une VM packer)
-sed -i '/^PermitRootLogin/s/^/#/' /etc/ssh/sshd_config
+#sed -i '/^PermitRootLogin/s/^/#/' /etc/ssh/sshd_config
 
 # TODO : Effacer /var/cache/apt/archives
 apt autoremove -y >> $LOGFILE 2>&1

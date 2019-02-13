@@ -1,7 +1,9 @@
 {
   "variables": {
       "debian_version": "9.7.0",
-      "debian_name": "stretch"
+      "debian_name": "stretch",
+      "vm_description": "Debian Stretch en CLI; proxy IUT",
+      "vm_version": "1.2"
   },
   "builders": [
     {
@@ -28,6 +30,11 @@
       "disk_size": 8192,
       "guest_os_type": "Debian_64",
       "headless": false,
+      "export_opts":
+      [
+        "--description", "{{user `vm_description`}}",
+        "--version", "{{user `vm_version`}}"
+      ],
       "format": "ova",
       "http_directory": ".",
       "iso_checksum_type": "sha512",
