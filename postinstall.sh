@@ -100,6 +100,8 @@ then
   # Pour José
   apt-get install -y leafpad >> $LOGFILE 2>&1
 
+  apt-get install -y putty >> $LOGFILE 2>&1
+
   apt-get install -y beep >> $LOGFILE 2>&1
 
   ####
