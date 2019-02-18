@@ -68,10 +68,10 @@ then
   modprobe vboxdrv
   modprobe vboxnetflt
   modprobe vboxnetadp
-  vboxmanage hostonlyif remove vboxnet0 >> $LOGFILE 2>&1
-  vboxmanage dhcpserver remove --ifname vboxnet0 >> $LOGFILE 2>&1
 
-  sudo -u etudiant bash -c "vboxmanage hostonlyif create; \
+  sudo -u etudiant bash -c "vboxmanage hostonlyif remove vboxnet0; \
+    vboxmanage dhcpserver remove --ifname vboxnet0; \
+    vboxmanage hostonlyif create; \
     vboxmanage hostonlyif ipconfig vboxnet0 --ip 192.168.56.1; \
     vboxmanage dhcpserver add --ifname vboxnet0 --ip 192.168.56.2 --netmask 255.255.255.0 --lowerip 192.168.56.3 --upperip 192.168.56.254; \
     vboxmanage dhcpserver modify --ifname vboxnet0 --enable"
@@ -143,6 +143,7 @@ apt-get install -y exfat-fuse >> $LOGFILE 2>&1
 apt-get install -y ethtool >> $LOGFILE 2>&1
 apt-get install -y psmisc >> $LOGFILE 2>&1
 apt-get install -y man >> $LOGFILE 2>&1
+apt-get install -y curl >> $LOGFILE 2>&1
 
 ####
 # sudo
@@ -273,6 +274,12 @@ EOF
   ####
   sudo -u etudiant bash -c "export \$(dbus-launch) \
         && dconf write /org/gnome/software/download-updates false"
+
+  ####
+  # Ecran noir après 15 minutes
+  ####
+  sudo -u etudiant bash -c "export \$(dbus-launch) \
+        && gsettings set org.gnome.desktop.session idle-delay 900"
 
   ####
   # Indicateur de restauration
