@@ -74,7 +74,7 @@ then
     vboxmanage hostonlyif create; \
     vboxmanage hostonlyif ipconfig vboxnet0 --ip 192.168.56.1; \
     vboxmanage dhcpserver add --ifname vboxnet0 --ip 192.168.56.2 --netmask 255.255.255.0 --lowerip 192.168.56.3 --upperip 192.168.56.254; \
-    vboxmanage dhcpserver modify --ifname vboxnet0 --enable"
+    vboxmanage dhcpserver modify --ifname vboxnet0 --enable" >> $LOGFILE 2>&1
 
   ####
   # Packages
@@ -86,9 +86,11 @@ then
   #Firefox, Open Office
   apt-get install -y sudo >> $LOGFILE 2>&1
 
+  # https://unix.stackexchange.com/questions/367866/how-to-choose-a-response-for-interactive-prompt-during-installation-from-a-shell
+  DEBIAN_FRONTEND=noninteractive apt-get -y install wireshark >> $LOGFILE 2>&1
   # Anticiper la question de l'installateur
   echo "wireshark-common wireshark-common/install-setuid boolean true" | debconf-set-selections
-  apt-get install -y wireshark >> $LOGFILE 2>&1
+  DEBIAN_FRONTEND=noninteractive dpkg-reconfigure wireshark-common >> $LOGFILE 2>&1
   # Autoriser etudiant à capturer le trafic
   usermod -a -G wireshark etudiant
 
