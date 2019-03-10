@@ -152,6 +152,8 @@ apt-get install -y curl >> $LOGFILE 2>&1
 # P+VM
 ####
 adduser etudiant sudo
+# etudiant peut faire sudo sans mot de passe
+echo "etudiant     ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
 
 ####
 # Divers : proxy firefox, indicateur de restauration, ...
