@@ -76,6 +76,15 @@ then
     vboxmanage dhcpserver add --ifname vboxnet0 --ip 192.168.56.2 --netmask 255.255.255.0 --lowerip 192.168.56.3 --upperip 192.168.56.254; \
     vboxmanage dhcpserver modify --ifname vboxnet0 --enable" >> $LOGFILE 2>&1
 
+  # Installer le pack d'extension VirtualBox
+  # XXX Trouver l'URL automatiquement
+  # Ne pas renommer le fichier downloadé !
+  wget https://download.virtualbox.org/virtualbox/6.0.4/Oracle_VM_VirtualBox_Extension_Pack-6.0.4.vbox-extpack
+  VBoxManage extpack install --replace Oracle_VM_VirtualBox_Extension_Pack-6.0.4.vbox-extpack <<< "y"
+  VBoxManage extpack cleanup
+  rm Oracle_VM_VirtualBox_Extension_Pack-6.0.4.vbox-extpack
+
+
   ####
   # Packages
   # P
