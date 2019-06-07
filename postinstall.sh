@@ -176,6 +176,9 @@ adduser etudiant sudo
 # etudiant peut faire sudo sans mot de passe
 echo "etudiant     ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
 
+# sudo préserve les variables *_proxy
+echo 'Defaults env_keep += "http_proxy https_proxy ftp_proxy"' >> /etc/sudoers
+
 ####
 # Divers : proxy firefox, indicateur de restauration, ...
 # P
