@@ -1,9 +1,9 @@
 {
   "variables": {
-      "debian_version": "9.7.0",
+      "debian_version": "9.9.0",
       "debian_name": "stretch",
       "vm_description": "Debian Stretch en CLI; proxy IUT",
-      "vm_version": "1.2"
+      "vm_version": "1.3"
   },
   "builders": [
     {
@@ -11,7 +11,7 @@
       "boot_command": [
         "<esc><wait>",
         "install <wait>",
-        "preseed/url=http://{{ .HTTPIP }}:{{ .HTTPPort }}/preseed.cfg <wait>",
+        "preseed/url=http://{{ .HTTPIP }}:{{ .HTTPPort }}/preseed-TMP.cfg <wait>",
         "debian-installer=fr_FR <wait>",
         "net.ifnames=0 biosdevname=0 <wait>",
         "auto <wait>",
@@ -32,19 +32,21 @@
       "headless": false,
       "export_opts":
       [
+        "--vsys", "0",
         "--description", "{{user `vm_description`}}",
         "--version", "{{user `vm_version`}}"
       ],
       "format": "ova",
       "http_directory": ".",
       "iso_checksum_type": "sha512",
-      "iso_checksum_url": "http://cdimage.debian.org/cdimage/release/{{user `debian_version`}}/amd64/iso-cd/SHA512SUMS",
-      "iso_url": "http://cdimage.debian.org/cdimage/release/{{user `debian_version`}}/amd64/iso-cd/debian-{{user `debian_version`}}-amd64-netinst.iso",
+      "iso_checksum": "42d9818abc4a08681dc0638f07e7aeb35d0c44646ab1e5b05a31a71d76c99da52b6192db9a3e852171ac78c2ba6b110b337c0b562c7be3d32e86a105023a6a0c",
+      "iso_url": "/Users/stinaugu/Documents/admin/master-iut/debian-etudiant/debian-{{user `debian_version`}}-amd64-netinst.iso",
       "ssh_username": "root",
       "ssh_password": "vitrygtr",
       "ssh_port": 22,
       "ssh_wait_timeout": "10000s",
-      "shutdown_command": "echo vitrygtr | sudo -S /sbin/shutdown -hP now",
+      "shutdown_command": "/sbin/shutdown -hP now",
+      "post_shutdown_delay": "10s",
       "guest_additions_path": "VBoxGuestAdditions_{{.Version}}.iso",
       "virtualbox_version_file": ".vbox_version",
       "vm_name": "debian-{{user `debian_name`}}",
@@ -63,6 +65,11 @@
       "type": "file",
       "source": "prep",
       "destination": "/root"
+    },
+    {
+      "type": "file",
+      "source": "proxy.sh",
+      "destination": "/usr/sbin/proxy.sh"
     },
     {
       "type": "shell",

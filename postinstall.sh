@@ -1,8 +1,5 @@
 #!/bin/bash
 
-export PROXYIUT="proxy.iutcv.fr"
-export PROXYIUT_PORT="3128"
-
 if [ $EUID -ne 0 ]
 then
   echo "Doit être exécuté en tant que root"
@@ -12,6 +9,21 @@ fi
 LOGFILE=.debian-etudiant.log
 
 rm $LOGFILE &> /dev/null
+
+####
+# Déterminer si on doit utiliser le proxy ou pas
+# Truc utilisé : si l'install a été faite avec le proxy, celui-ci
+# est configuré dans APT
+####
+p=$(grep "^Acquire::http::Proxy" /etc/apt/apt.conf | cut -d'"' -f 2)
+
+if [ "$p" != "" ]
+then
+  tmp=${p%:*}
+  export PROXYIUT=${tmp#http://}
+
+  export PROXYIUT_PORT=${p##*:}
+fi
 
 # TODO : utiliser facter pour savoir si on est sur une VM ou un PC physique
 
