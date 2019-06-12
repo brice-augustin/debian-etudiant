@@ -1,19 +1,6 @@
 #!/bin/bash
 
 ####
-# Proxy
-####
-
-# Effacer toute config de *_proxy
-sed -E -i '/(ht|f)tps?_proxy=/d' /etc/bash.bashrc
-
-echo "export http_proxy=http://$PROXYIUT:$PROXYIUT_PORT" >> /etc/bash.bashrc
-echo "export https_proxy=http://$PROXYIUT:$PROXYIUT_PORT" >> /etc/bash.bashrc
-echo "export ftp_proxy=http://$PROXYIUT:$PROXYIUT_PORT" >> /etc/bash.bashrc
-
-echo "Acquire::http::Proxy \"http://$PROXYIUT:$PROXYIUT_PORT\";" > /etc/apt/apt.conf.d/80proxy
-
-####
 # setleds
 ####
 

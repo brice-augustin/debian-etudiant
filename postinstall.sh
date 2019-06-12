@@ -15,6 +15,7 @@ rm $LOGFILE &> /dev/null
 # Truc utilisé : si l'install a été faite avec le proxy, celui-ci
 # est configuré dans APT
 ####
+# apt.conf n'existe pas si le proxy n'est pas configuré à l'install
 p=$(grep "^Acquire::http::Proxy" /etc/apt/apt.conf | cut -d'"' -f 2)
 
 if [ "$p" != "" ]
@@ -23,6 +24,11 @@ then
   export PROXYIUT=${tmp#http://}
 
   export PROXYIUT_PORT=${p##*:}
+
+  # Configurer temporairement le proxy (pour les curl, wget, etc. du script)
+  export http_proxy="http://$PROXYIUT:$PROXYIUT_PORT"
+  export https_proxy="http://$PROXYIUT:$PROXYIUT_PORT"
+  export ftp_proxy="http://$PROXYIUT:$PROXYIUT_PORT"
 fi
 
 # TODO : utiliser facter pour savoir si on est sur une VM ou un PC physique
@@ -31,15 +37,6 @@ if [ "$DEPLOY_TYPE" == "vm" ]
 then
   sleep 5
 fi
-
-####
-# Préparation au clonage ou à l'exportation OVA
-# Doit être lancé au début pour configurer le proxy
-# P+VM
-####
-pushd prep
-./masterprep.sh
-popd
 
 apt-get update -y >> $LOGFILE 2>&1
 
@@ -194,32 +191,6 @@ then
   sed -i '2a /usr/bin/numlockx on' /etc/X11/xinit/xinitrc
 
   ####
-  # Proxy du navigateur Web
-  # P
-  ####
-
-  # https://support.mozilla.org/fr/questions/901549
-  # network.proxy.share_proxy_settings = true pour configurer le proxy HTTP pour
-  # tous les autres protocoles : pas d'effet sur la dialog box
-  # Mais sans importance il faut surtout que le proxy SSL/FTP/etc soit bien
-  # configuré dans les cases en dessous
-  # pref("network.proxy.ssl", "$PROXYIUT");
-  # pref("network.proxy.ssl_port", "$PROXYIUT_PORT");
-  # pref("network.proxy.ftp", "$PROXYIUT");
-  # pref("network.proxy.ftp_port", "$PROXYIUT_PORT");
-  cat > /usr/lib/firefox-esr/defaults/pref/local-settings.js << EOF
-pref("network.proxy.http", "$PROXYIUT");
-pref("network.proxy.http_port", $PROXYIUT_PORT);
-pref("network.proxy.share_proxy_settings", true);
-pref("network.proxy.ssl", "$PROXYIUT");
-pref("network.proxy.ssl_port", $PROXYIUT_PORT);
-pref("network.proxy.ftp", "$PROXYIUT");
-pref("network.proxy.ftp_port", $PROXYIUT_PORT);
-pref("network.proxy.no_proxies_on", "localhost,127.0.0.1,172.16.0.0/16,*.iutcv.fr");
-pref("network.proxy.type", 1);
-EOF
-
-  ####
   # Partition DATA
   # P
   ####
@@ -329,8 +300,12 @@ EOF
 
   systemctl enable taint.service
 
-  [ -f /tainted ] && rm /tainted
-  [ -f /taint/tainted ] && rm /taint/tainted
+  # Ne pas supprimer tainted (= laisser l'OS marqué comme 'sali')
+  # Il sera marqué comme propre après la restauration
+  #[ -f /tainted ] && rm /tainted
+  touch tainted
+  touch /taint/tainted
+  #[ -f /taint/tainted ] && rm /taint/tainted
 fi
 
 ####
@@ -340,6 +315,21 @@ fi
 # Désactiver la connexion SSH avec le login root
 # (activé pour provisionner une VM packer)
 #sed -i '/^PermitRootLogin/s/^/#/' /etc/ssh/sshd_config
+
+####
+# Préparation au clonage ou à l'exportation OVA
+# P+VM
+####
+
+# Si l'install a été faite avec le proxy, configuration complète de celui-ci
+if [ "$PROXYIUT" != "" ]
+then
+  /usr/sbin/proxy.sh enable force
+fi
+
+pushd prep
+./masterprep.sh
+popd
 
 # TODO : Effacer /var/cache/apt/archives
 apt autoremove -y >> $LOGFILE 2>&1
