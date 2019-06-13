@@ -322,15 +322,6 @@ fi
 # Préparation au clonage ou à l'exportation OVA
 # P+VM
 ####
-cp prep/proxy.sh /usr/sbin/
-chmod +x /usr/bin/proxy.sh
-
-# Si l'install a été faite avec le proxy, configuration complète de celui-ci
-if [ "$PROXYIUT" != "" ]
-then
-  /usr/sbin/proxy.sh enable force
-fi
-
 pushd prep
 ./masterprep.sh
 popd

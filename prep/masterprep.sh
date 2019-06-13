@@ -1,5 +1,24 @@
 #!/bin/bash
 
+#########
+# Script commun à Debian etudiant et RH
+#########
+
+####
+# Proxy
+####
+cp prep/proxy.sh /usr/sbin/
+chmod +x /usr/bin/proxy.sh
+
+p=$(grep "^Acquire::http::Proxy" /etc/apt/apt.conf | cut -d'"' -f 2)
+
+# Si l'install a été faite avec le proxy, configuration complète de celui-ci
+if [ "$p" != "" ]
+#if [ "$PROXYIUT" != "" ]
+then
+  /usr/sbin/proxy.sh enable force
+fi
+
 ####
 # setleds
 ####
