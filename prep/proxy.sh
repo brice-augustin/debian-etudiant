@@ -74,8 +74,11 @@ then
     exit
   fi
 
-  rm /usr/lib/firefox-esr/defaults/pref/local-settings.js
-
+  if [ -f /usr/lib/firefox-esr/defaults/pref/local-settings.js ]
+  then
+    rm /usr/lib/firefox-esr/defaults/pref/local-settings.js
+  fi
+  
   # Effacer toute config de *_proxy
   sed -E -i '/(ht|f)tps?_proxy=/d' /etc/bash.bashrc
 

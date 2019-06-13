@@ -8,7 +8,6 @@
 # Proxy
 ####
 cp proxy.sh /usr/sbin/
-chmod +x /usr/bin/proxy.sh
 
 p=$(grep "^Acquire::http::Proxy" /etc/apt/apt.conf | cut -d'"' -f 2)
 
