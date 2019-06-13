@@ -31,7 +31,7 @@ fi
 
 echo ""
 
-# Inutile mais fun
+# Inutile mais fun
 args=$(echo $@ | awk '{$NF=""; print $0}')
 
 #if [ $c -eq 0 ]
