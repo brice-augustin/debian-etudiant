@@ -89,12 +89,35 @@ EOF
 # "Running in chroot, ignoring request." si lancé depuis chroot
 systemctl daemon-reload
 
+####
+# Hook pour dhclient
+# P+VM
+####
+
+# Copier le dhclient legacy dans /usr/sbin
+mv /sbin/dhclient /usr/sbin
+
+# Notre hook doit obligatoirement être dans /sbin (codé en dur dans ifup).
+# Il invoque le dhclient legacy via son 'nouveau' chemin complet
+cp dhclient-hook.sh /sbin/dhclient
+
+# Au cas où une autre app (ou un utilisateur) invoque dhclient
+# sans préciser le chemin, il faut que notre hook soit invoqué.
+# /usr/local/sbin est en premier dans le PATH du root :
+# /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+ln /sbin/dhclient /usr/local/sbin
+
+# dhclient doit abandonner après 10 secondes; évite qu'une interface non câblée
+# retarde la conf des interfaces suivantes pendant des plombes ...
+echo "timeout 10;" >> /etc/dhcp/dhclient.conf
+
+####
+# Swap
+# https://lists.debian.org/debian-user/2017/09/msg00866.html
+####
+
 if [ "$DEPLOY_TYPE" != "vm" ]
 then
-  ####
-  # Swap
-  # https://lists.debian.org/debian-user/2017/09/msg00866.html
-  ####
   # /dev/sda5 -> \/dev\/sda5 sinon sed couine
   swap=$(swapon -s | grep "^/dev" | awk '{print $1}' | sed 's/\//\\\//g')
 
