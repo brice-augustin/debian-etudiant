@@ -67,11 +67,6 @@
       "destination": "/root"
     },
     {
-      "type": "file",
-      "source": "proxy.sh",
-      "destination": "/usr/sbin/proxy.sh"
-    },
-    {
       "type": "shell",
       "script": "postinstall.sh",
       "environment_vars": [ "DEPLOY_TYPE=vm" ]

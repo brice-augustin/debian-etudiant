@@ -314,12 +314,16 @@ fi
 ####
 # Désactiver la connexion SSH avec le login root
 # (activé pour provisionner une VM packer)
+# 13/06/2019 : autoriser le login root pour simplifier le provisionnement
+# avec Packer (pas besoin de sudo, et on peut utiliser le provisionner 'script')
 #sed -i '/^PermitRootLogin/s/^/#/' /etc/ssh/sshd_config
 
 ####
 # Préparation au clonage ou à l'exportation OVA
 # P+VM
 ####
+cp prep/proxy.sh /usr/sbin/
+chmod +x /usr/bin/proxy.sh
 
 # Si l'install a été faite avec le proxy, configuration complète de celui-ci
 if [ "$PROXYIUT" != "" ]
