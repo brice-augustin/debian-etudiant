@@ -11,7 +11,7 @@ cp proxy.sh /usr/sbin/
 
 p=$(grep "^Acquire::http::Proxy" /etc/apt/apt.conf | cut -d'"' -f 2)
 
-# Si l'install a été faite avec le proxy, configuration complète de celui-ci
+# Si l'install a été faite avec le proxy, activer sa configuration complète
 if [ "$p" != "" ]
 #if [ "$PROXYIUT" != "" ]
 then
@@ -93,22 +93,26 @@ systemctl daemon-reload
 # P+VM
 ####
 
-# Copier le dhclient legacy dans /usr/sbin
-mv /sbin/dhclient /usr/sbin
+# Do not install the hook if it's already in place (infinite loop) !
+if [ ! -f /usr/local/sbin/dhclient ]
+then
+  # Copier le dhclient legacy dans /usr/sbin
+  mv /sbin/dhclient /usr/sbin
 
-# Notre hook doit obligatoirement être dans /sbin (codé en dur dans ifup).
-# Il invoque le dhclient legacy via son 'nouveau' chemin complet
-cp dhclient-hook.sh /sbin/dhclient
+  # Notre hook doit obligatoirement être dans /sbin (codé en dur dans ifup).
+  # Il invoque le dhclient legacy via son 'nouveau' chemin complet
+  cp dhclient-hook.sh /sbin/dhclient
 
-# Au cas où une autre app (ou un utilisateur) invoque dhclient
-# sans préciser le chemin, il faut que notre hook soit invoqué.
-# /usr/local/sbin est en premier dans le PATH du root :
-# /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
-ln /sbin/dhclient /usr/local/sbin
+  # Au cas où une autre app (ou un utilisateur) invoque dhclient
+  # sans préciser le chemin, il faut que notre hook soit invoqué.
+  # /usr/local/sbin est en premier dans le PATH du root :
+  # /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+  ln /sbin/dhclient /usr/local/sbin
 
-# dhclient doit abandonner après 10 secondes; évite qu'une interface non câblée
-# retarde la conf des interfaces suivantes pendant des plombes ...
-echo "timeout 10;" >> /etc/dhcp/dhclient.conf
+  # dhclient doit abandonner après 10 secondes; évite qu'une interface non câblée
+  # retarde la conf des interfaces suivantes pendant des plombes ...
+  echo "timeout 10;" >> /etc/dhcp/dhclient.conf
+fi
 
 ####
 # Swap

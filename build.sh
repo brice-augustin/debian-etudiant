@@ -14,7 +14,10 @@ cp preseed.cfg preseed-TMP.cfg
 
 if [ "$1" == "proxy" ]
 then
+  echo "Building image with proxy enabled"
   echo "d-i mirror/http/proxy string $PROXY" >> preseed-TMP.cfg
+else
+  echo "Building image with proxy disabled"
 fi
 
 packer validate debian.json
