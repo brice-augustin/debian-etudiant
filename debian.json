@@ -69,7 +69,7 @@
     {
       "type": "shell",
       "script": "postinstall.sh",
-      "environment_vars": [ "DEPLOY_TYPE=vm" ]
+      "environment_vars": [ "DEPLOY_TYPE=cli" ]
     },
     {
         "type": "shell",

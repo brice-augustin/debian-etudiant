@@ -10,6 +10,11 @@ LOGFILE=.debian-etudiant.log
 
 rm $LOGFILE &> /dev/null
 
+if [ "$DEPLOY_TYPE" == "" ]
+then
+  DEPLOY_TYPE="gui"
+fi
+
 ####
 # Déterminer si on doit utiliser le proxy ou pas
 # Truc utilisé : si l'install a été faite avec le proxy, celui-ci
@@ -33,28 +38,42 @@ fi
 
 # TODO : utiliser facter pour savoir si on est sur une VM ou un PC physique
 
-if [ "$DEPLOY_TYPE" == "vm" ]
+if [ "$DEPLOY_TYPE" == "cli" ]
 then
+  # Installation in a VM with Packer; pause a few moment
   sleep 5
 fi
 
 apt-get update -y >> $LOGFILE 2>&1
 
-if [ "$DEPLOY_TYPE" != "vm" ]
+# En CLI, NetworkManager n'est pas installé
+if [ "$DEPLOY_TYPE" != "cli" ]
 then
   ####
   # Network manager
-  # P
+  # light+gui
   ####
   apt-get remove --purge -y network-manager >> $LOGFILE 2>&1
   if dpkg -l wicd | grep -E "ii\s+wicd"
   then
     apt-get remove --purge -y wicd >> $LOGFILE 2>&1
   fi
+fi
+
+# Installer certaines apps uniquement sur des PC puissants (pas sur des laptops)
+if [ "$DEPLOY_TYPE" == "gui" ]
+then
+  ####
+  # Atom
+  # gui
+  ####
+  wget --no-check-certificate https://atom.io/download/deb -O atom.deb
+  apt-get install -y git >> $LOGFILE 2>&1
+  dpkg -i atom.deb >> $LOGFILE 2>&1
 
   ####
   # VirtualBox
-  # P
+  # gui
   ####
   echo "deb http://download.virtualbox.org/virtualbox/debian stretch contrib" > /etc/apt/sources.list.d/virtualbox.list
 
@@ -93,16 +112,44 @@ then
   VBoxManage extpack cleanup
   rm Oracle_VM_VirtualBox_Extension_Pack-6.0.4.vbox-extpack
 
+  ####
+  # Dynamips et Dynagen
+  # gui
+  ####
+  sed -i '/^deb .* stretch /s/main$/main contrib non-free/' /etc/apt/sources.list
+
+  apt-get update -y >> $LOGFILE 2>&1
+  apt-get install -y dynamips dynagen >> $LOGFILE 2>&1
+
+  sed -i '/^deb .* stretch /s/ contrib non-free//' /etc/apt/sources.list
+
+  apt-get update -y >> $LOGFILE 2>&1
 
   ####
+  # Packer
+  # gui
+  # Pas de lien vers la latest version :
+  # https://github.com/hashicorp/terraform/issues/9803
+  ####
+  wget --no-check-certificate https://releases.hashicorp.com/packer/1.2.4/packer_1.2.4_linux_amd64.zip -O packer.zip
+  unzip -o -d /usr/local/bin packer.zip
+fi
+
+# Dans le cas d'une VM créé par Packer, sudo est déjà installé via preseed. Pas grave
+apt-get install -y sudo >> $LOGFILE 2>&1
+
+# Ces paquetages n'ont pas d'utilité en CLI
+if [ "$DEPLOY_TYPE" != "cli" ]
+then
+  ####
   # Packages
-  # P
+  # light+gui
   # TODO : ne pas installer les "utilitaires usuels du système" ?
   # Liste : aptitude search ~pstandard ~prequired ~pimportant -F%p
   # Source https://wiki.debian.org/tasksel#A.22standard.22_task
   ####
-  #Firefox, Open Office
-  apt-get install -y sudo >> $LOGFILE 2>&1
+
+  # TODO : Firefox, Open Office
 
   # https://unix.stackexchange.com/questions/367866/how-to-choose-a-response-for-interactive-prompt-during-installation-from-a-shell
   DEBIAN_FRONTEND=noninteractive apt-get -y install wireshark >> $LOGFILE 2>&1
@@ -123,38 +170,11 @@ then
   apt-get install -y putty >> $LOGFILE 2>&1
 
   apt-get install -y beep >> $LOGFILE 2>&1
-
-  ####
-  # Atom
-  ####
-  wget --no-check-certificate https://atom.io/download/deb -O atom.deb
-  apt-get install -y git >> $LOGFILE 2>&1
-  dpkg -i atom.deb >> $LOGFILE 2>&1
-
-  ####
-  # Packer
-  # Pas de lien vers la latest version :
-  # https://github.com/hashicorp/terraform/issues/9803
-  ####
-  wget --no-check-certificate https://releases.hashicorp.com/packer/1.2.4/packer_1.2.4_linux_amd64.zip -O packer.zip
-  unzip -o -d /usr/local/bin packer.zip
-
-  ####
-  # Dynamips et Dynagen
-  ####
-  sed -i '/^deb .* stretch /s/main$/main contrib non-free/' /etc/apt/sources.list
-
-  apt-get update -y >> $LOGFILE 2>&1
-  apt-get install -y dynamips dynagen >> $LOGFILE 2>&1
-
-  sed -i '/^deb .* stretch /s/ contrib non-free//' /etc/apt/sources.list
-
-  apt-get update -y >> $LOGFILE 2>&1
 fi
 
 ####
 # Packages
-# P+VM
+# cli+light+gui
 ####
 apt-get install -y tcpdump >> $LOGFILE 2>&1
 apt-get install -y net-tools iperf iptraf bridge-utils >> $LOGFILE 2>&1
@@ -166,8 +186,8 @@ apt-get install -y man >> $LOGFILE 2>&1
 apt-get install -y curl >> $LOGFILE 2>&1
 
 ####
-# sudo
-# P+VM
+# Configuration de sudo
+# cli+light+gui
 ####
 adduser etudiant sudo
 # etudiant peut faire sudo sans mot de passe
@@ -177,23 +197,50 @@ echo "etudiant     ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
 echo 'Defaults env_keep += "http_proxy https_proxy ftp_proxy"' >> /etc/sudoers
 
 ####
-# Divers : proxy firefox, indicateur de restauration, ...
-# P
+# Verrouillage numérique en GUI
+# light+gui
 ####
-if [ "$DEPLOY_TYPE" != "vm" ]
+if [ "$DEPLOY_TYPE" != "cli" ]
 then
-  ####
-  # Verrouillage numérique en GUI
-  ####
   apt-get install -y numlockx >> $LOGFILE 2>&1
 
   # Ajout au début du script, après le shebang
   sed -i '2a /usr/bin/numlockx on' /etc/X11/xinit/xinitrc
 
   ####
-  # Partition DATA
-  # P
+  # Indicateur de restauration
   ####
+  cp prep/taint.sh /usr/local/bin
+
+  cat > /etc/systemd/system/taint.service << EOF
+[Unit]
+Description=Fond d'écran comme indicateur de restauration
+
+[Service]
+Type=oneshot
+RemainAfterExit=no
+ExecStart=/usr/local/bin/taint.sh
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+  systemctl enable taint.service
+
+  # Ne pas supprimer tainted (= laisser l'OS marqué comme 'sali')
+  # Il sera marqué comme propre après la restauration
+  #[ -f /tainted ] && rm /tainted
+  touch tainted
+  touch /taint/tainted
+  #[ -f /taint/tainted ] && rm /taint/tainted
+fi
+
+####
+# Partition DATA
+# gui
+####
+if [ "$DEPLOY_TYPE" == "gui" ]
+then
   mkdir -p /mnt/DATA
 
   win=$(fdisk -l | grep Microsoft | cut -d ' ' -f 1)
@@ -231,15 +278,18 @@ then
   else
     echo "Pas de partition de données sur le disque."
   fi
+fi
 
-  ####
-  # Gnome terminal
-  # dconf dump / n'affiche pas toutes les valeurs, slt les valeurs modifiées
-  # Identifier une clé : modifier manuellement, puis dconf dump / pour voir les différences
-  # https://forums.opensuse.org/showthread.php/513424-how-to-change-gnome-terminal-colors-from-cli
-  # https://www.hadji.co/switch-terminal-colors-at-night/
-  ####
-
+####
+# Gnome terminal
+# gui (pas light ?)
+# dconf dump / n'affiche pas toutes les valeurs, slt les valeurs modifiées
+# Identifier une clé : modifier manuellement, puis dconf dump / pour voir les différences
+# https://forums.opensuse.org/showthread.php/513424-how-to-change-gnome-terminal-colors-from-cli
+# https://www.hadji.co/switch-terminal-colors-at-night/
+####
+if [ "$DEPLOY_TYPE" == "gui" ]
+then
   # Erreurs mais fonctionne quand même
   # (dconf:548): dconf-CRITICAL **: unable to create directory '/run/user/1000/dconf': Permission non accordée.  dconf will not work properly.
   # Escaper les $ sinon les variables sont substituées trop tôt !
@@ -279,38 +329,11 @@ then
   ####
   sudo -u etudiant bash -c "export \$(dbus-launch) \
         && gsettings set org.gnome.desktop.session idle-delay 900"
-
-  ####
-  # Indicateur de restauration
-  ####
-  cp prep/taint.sh /usr/local/bin
-
-  cat > /etc/systemd/system/taint.service << EOF
-[Unit]
-Description=Fond d'écran comme indicateur de restauration
-
-[Service]
-Type=oneshot
-RemainAfterExit=no
-ExecStart=/usr/local/bin/taint.sh
-
-[Install]
-WantedBy=multi-user.target
-EOF
-
-  systemctl enable taint.service
-
-  # Ne pas supprimer tainted (= laisser l'OS marqué comme 'sali')
-  # Il sera marqué comme propre après la restauration
-  #[ -f /tainted ] && rm /tainted
-  touch tainted
-  touch /taint/tainted
-  #[ -f /taint/tainted ] && rm /taint/tainted
 fi
 
 ####
 # SSH
-# P+VM
+# cli+light+gui
 ####
 # Désactiver la connexion SSH avec le login root
 # (activé pour provisionner une VM packer)
@@ -320,7 +343,7 @@ fi
 
 ####
 # Préparation au clonage ou à l'exportation OVA
-# P+VM
+# cli+light+gui
 ####
 pushd prep
 ./masterprep.sh

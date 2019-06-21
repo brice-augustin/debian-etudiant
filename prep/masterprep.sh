@@ -119,7 +119,7 @@ fi
 # https://lists.debian.org/debian-user/2017/09/msg00866.html
 ####
 
-if [ "$DEPLOY_TYPE" != "vm" ]
+if [ "$DEPLOY_TYPE" != "cli" ]
 then
   # /dev/sda5 -> \/dev\/sda5 sinon sed couine
   swap=$(swapon -s | grep "^/dev" | awk '{print $1}' | sed 's/\//\\\//g')

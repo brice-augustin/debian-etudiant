@@ -15,5 +15,5 @@ Installe les applications et configure l'environnement utilisé en TP.
 ./build.sh [proxy]
 ```
 
-Sans paramètre, lance une installation en CLI, avec les applications et l'environnement utilisé en TP.
+Sans paramètre, installe l'OS en CLI, les applications et configure l'environnement utilisé en TP.
 Le paramètre `proxy` permet d'utiliser le proxy de l'IUT pendant l'installation.
