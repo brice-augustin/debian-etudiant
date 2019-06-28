@@ -14,6 +14,9 @@ iso=http://cdimage.debian.org/cdimage/release/9.9.0/amd64/iso-cd/debian-9.9.0-am
 
 isofile=$(echo ${iso##*/})
 
+# Préparation du fichier preseed à partir d'un template
+cp preseed.cfg preseed-TMP.cfg
+
 if [ "$1" == "proxy" ]
 then
   PROXY=http://proxy.iutcv.fr:3128
@@ -26,13 +29,12 @@ fi
 if [ ! -f $isofile ]
 then
   # wget not installed by default on MacOS
-  # curl does not follow redirects. Use -L to force that. 
+  # curl does not follow redirects. Use -L to force that.
   http_proxy=$PROXY curl -O -L $iso
 else
   echo "Using existing ISO file ($isofile)"
 fi
 
-cp preseed.cfg preseed-TMP.cfg
-
+# Installation basée sur preseed-TMP.cfg
 packer validate debian.json
 packer build debian.json
