@@ -1,9 +1,9 @@
 {
   "variables": {
-      "debian_version": "9.9.0",
-      "debian_name": "stretch",
-      "vm_description": "Debian Stretch en CLI; proxy IUT",
-      "vm_version": "1.3"
+      "debian_version": "10.1.0",
+      "debian_name": "buster",
+      "vm_description": "Debian Buster en CLI",
+      "vm_version": "1.0"
   },
   "builders": [
     {
@@ -37,6 +37,8 @@
         "--version", "{{user `vm_version`}}"
       ],
       "format": "ova",
+      "skip_export": false,
+      "keep_registered": false,
       "http_directory": ".",
       "iso_checksum_type": "none",
       "iso_url": "debian-{{user `debian_version`}}-amd64-netinst.iso",
@@ -50,10 +52,13 @@
       "virtualbox_version_file": ".vbox_version",
       "vm_name": "debian-{{user `debian_name`}}",
       "vboxmanage": [
-        [ "modifyvm", "{{.Name}}", "--memory", "512" ],
+        [ "modifyvm", "{{.Name}}", "--memory", "1024" ],
         [ "modifyvm", "{{.Name}}", "--cpus", "1" ],
         [ "modifyvm", "{{.Name}}", "--usb", "on" ],
         [ "modifyvm", "{{.Name}}", "--mouse", "usbtablet" ]
+      ],
+      "vboxmanage_post": [
+        [ "modifyvm", "{{.Name}}", "--memory", "512" ]
       ]
     }
   ],
