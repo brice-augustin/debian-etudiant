@@ -10,6 +10,8 @@ LOGFILE=.debian-etudiant.log
 
 rm $LOGFILE &> /dev/null
 
+# Pour une installation 'light' (PC portables) :
+# export DEPLOY_TYPE="light" avant de lancer l'install de RH
 if [ "$DEPLOY_TYPE" == "" ]
 then
   DEPLOY_TYPE="gui"
@@ -21,7 +23,7 @@ fi
 # est configuré dans APT
 ####
 # apt.conf n'existe pas si le proxy n'est pas configuré à l'install
-p=$(grep "^Acquire::http::Proxy" /etc/apt/apt.conf | cut -d'"' -f 2)
+p=$(grep "^Acquire::http::Proxy" /etc/apt/apt.conf 2> /dev/null | cut -d'"' -f 2)
 
 if [ "$p" != "" ]
 then
