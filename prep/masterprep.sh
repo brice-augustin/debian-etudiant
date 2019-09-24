@@ -9,7 +9,7 @@
 ####
 cp proxy.sh /usr/sbin/
 
-p=$(grep "^Acquire::http::Proxy" /etc/apt/apt.conf | cut -d'"' -f 2)
+p=$(grep "^Acquire::http::Proxy" /etc/apt/apt.conf 2> /dev/null | cut -d'"' -f 2)
 
 # Si l'install a été faite avec le proxy, activer sa configuration complète
 if [ "$p" != "" ]
@@ -96,12 +96,18 @@ systemctl daemon-reload
 # Do not install the hook if it's already in place (infinite loop) !
 if [ ! -f /usr/local/sbin/dhclient ]
 then
-  # Copier le dhclient legacy dans /usr/sbin
-  mv /sbin/dhclient /usr/sbin
+  # Faire une copie du dhclient legacy
+  mv /sbin/dhclient /sbin/dhclient.legacy
+  # Dans Buster, dhclient est aussi dans /usr/sbin (en plus de /sbin)
+  # /usr/sbin est un miroir de /sbin !
+  # Pas besoin de renommer /usr/sbin/dhclient, c'est déjà fait avec le précédent
+  # mv /usr/sbin/dhclient /usr/sbin/dhclient.legacy
 
   # Notre hook doit obligatoirement être dans /sbin (codé en dur dans ifup).
   # Il invoque le dhclient legacy via son 'nouveau' chemin complet
   cp dhclient-hook.sh /sbin/dhclient
+  # Pas besoin, /usr/sbin est un miroir de /sbin
+  #ln /sbin/dhclient /usr/sbin
 
   # Au cas où une autre app (ou un utilisateur) invoque dhclient
   # sans préciser le chemin, il faut que notre hook soit invoqué.

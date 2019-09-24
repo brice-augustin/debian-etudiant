@@ -42,4 +42,4 @@ args=$(echo $@ | awk '{$NF=""; print $0}')
 
 # L'interface est initialisée, le dhclient legacy peut faire
 # son travail dans de bonnes conditions
-/usr/sbin/dhclient $args $nic
+/usr/sbin/dhclient.legacy $args $nic
