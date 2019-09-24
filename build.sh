@@ -1,7 +1,7 @@
 #!/bin/bash
 
-s=http://cdimage.debian.org/cdimage/release/9.9.0/amd64/iso-cd/SHA512SUMS
-iso=http://cdimage.debian.org/cdimage/release/9.9.0/amd64/iso-cd/debian-9.9.0-amd64-netinst.iso
+s=http://cdimage.debian.org/cdimage/release/10.1.0/amd64/iso-cd/
+iso=http://cdimage.debian.org/cdimage/release/10.1.0/amd64/iso-cd/debian-10.1.0-amd64-netinst.iso
 
 # Actuellement, le checksum n'est pas vérifié.
 # "iso_checksum": "PUT CHECKSUM HERE"
@@ -15,6 +15,7 @@ iso=http://cdimage.debian.org/cdimage/release/9.9.0/amd64/iso-cd/debian-9.9.0-am
 isofile=$(echo ${iso##*/})
 
 # Préparation du fichier preseed à partir d'un template
+# Buster installer in low memory mode (512 MB)
 cp preseed.cfg preseed-TMP.cfg
 
 if [ "$1" == "proxy" ]
