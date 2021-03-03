@@ -62,6 +62,11 @@ then
   fi
 fi
 
+#####
+# Git
+#####
+apt-get install -y git >> $LOGFILE 2>&1
+
 # Installer certaines apps uniquement sur des PC puissants (pas sur des laptops)
 if [ "$DEPLOY_TYPE" == "gui" ]
 then
@@ -70,7 +75,6 @@ then
   # gui
   ####
   wget --no-check-certificate https://atom.io/download/deb -O atom.deb
-  apt-get install -y git >> $LOGFILE 2>&1
   dpkg -i atom.deb >> $LOGFILE 2>&1
 
   ####
@@ -186,6 +190,8 @@ apt-get install -y ethtool >> $LOGFILE 2>&1
 apt-get install -y psmisc >> $LOGFILE 2>&1
 apt-get install -y man >> $LOGFILE 2>&1
 apt-get install -y curl >> $LOGFILE 2>&1
+# 25/03 : Mais pourquoi il était pas déjà installé ???
+apt-get install -y dnsutils >> $LOGFILE 2>&1
 
 ####
 # Configuration de sudo

@@ -36,6 +36,9 @@ else
   echo "Using existing ISO file ($isofile)"
 fi
 
+echo "TODO 03/2020 : colors.sh pour les couleurs des TTY"
+exit
+
 # Installation basée sur preseed-TMP.cfg
 packer validate debian.json
 packer build debian.json

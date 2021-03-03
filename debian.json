@@ -1,6 +1,6 @@
 {
   "variables": {
-      "debian_version": "10.1.0",
+      "debian_version": "10.6.0",
       "debian_name": "buster",
       "vm_description": "Debian Buster en CLI",
       "vm_version": "1.0"
@@ -27,7 +27,7 @@
         "<enter><wait>"
       ],
       "boot_wait": "10s",
-      "disk_size": 8192,
+      "disk_size": 16384,
       "guest_os_type": "Debian_64",
       "headless": false,
       "export_opts":
