@@ -317,7 +317,8 @@ then
             \"['firefox-esr.desktop', 'libreoffice-writer.desktop', \
             'org.gnome.Nautilus.desktop', 'virtualbox.desktop', \
             'atom.desktop', 'org.gnome.Terminal.desktop', \
-            'wireshark.desktop']\""
+            'wireshark.desktop', 'org.gnome.Screenshot.desktop', \ 
+            'putty.desktop']\""
 
   ####
   # Gnome fond d'écran
