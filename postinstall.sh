@@ -77,6 +77,12 @@ then
   wget --no-check-certificate https://atom.io/download/deb -O atom.deb
   dpkg -i atom.deb >> $LOGFILE 2>&1
 
+  # TODO : installer les linux-headers pour le kernel actuel
+  # sinon galère pour les installer plus tard s'ils ont disparu du repo Debian
+
+  # TODO : installer draw.io
+  # https://computingforgeeks.com/install-draw-io-desktop-application-on-ubuntu-debian-fedora/
+
   ####
   # VirtualBox
   # gui
@@ -173,6 +179,7 @@ then
   # Pour José
   apt-get install -y leafpad >> $LOGFILE 2>&1
 
+  # TODO : modif raccourci pour lancer avec droits root
   apt-get install -y putty >> $LOGFILE 2>&1
 
   apt-get install -y beep >> $LOGFILE 2>&1
